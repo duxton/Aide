@@ -8,6 +8,8 @@ class ViewProfile extends StatefulWidget {
 class _ViewProfileState extends State<ViewProfile> {
   @override
   Widget build(BuildContext context) {
-    return Text('View Profile');
+    return Column(
+      children: <Widget>[Text('View Profile')],
+    );
   }
 }
