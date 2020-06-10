@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "410639704147",
+    "firebase_url": "https://aide-69fb2.firebaseio.com",
+    "project_id": "aide-69fb2",
+    "storage_bucket": "aide-69fb2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410639704147:android:b5da31e169468510f666a6",
+        "android_client_info": {
+          "package_name": "com.duxton.AideApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410639704147-uvlo8qlfrbf87h7cp1i98t3mrn7g3792.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.duxton.AideApp",
+            "certificate_hash": "b44a6ee1cf695f0746ea260102fb232187333da0"
+          }
+        },
+        {
+          "client_id": "410639704147-jgflqdccectsu7tapf06dqi6igenbil0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxBsdiiEO0zmCW9FPe-rinoI1Rle14VZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410639704147-jgflqdccectsu7tapf06dqi6igenbil0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "410639704147-dsvrvqh7hemoestt7f3st1cflad8g13v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.duxton.AideApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
