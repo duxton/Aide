@@ -21,11 +21,12 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  flutter:
+  flutter_localizations:
     sdk: flutter
   animator: 0.1.4
   cached_network_image: ^2.2.0+1
   cloud_firestore: ^0.9.7+2
+  flutter_rounded_date_picker: ^1.0.4
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -52,6 +53,7 @@ flutter:
     - assets/images/search.svg
     - assets/images/activity_feed.svg
     - assets/images/no_content.svg
+    - assets/images/milky-way.jpg
 
   # fonts:
   #   - family: Schyler

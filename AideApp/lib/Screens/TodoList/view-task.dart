@@ -1,4 +1,5 @@
 import 'package:AideApp/Screens/TodoList/edit-task.dart';
+import 'package:AideApp/Screens/TodoList/task-details.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
 
@@ -7,13 +8,19 @@ class ViewTask extends StatefulWidget {
   _ViewTaskState createState() => _ViewTaskState();
 }
 
-taskCard() {
-  return Card(
-    child: ListTile(
-      leading: CircleAvatar(),
-      title: Text('Task Name'),
-      subtitle: Text('Location'),
-      trailing: Text('9m'),
+taskCard(context) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => TaskDetails()));
+    },
+      child: Card(
+      child: ListTile(
+        leading: CircleAvatar(),
+        title: Text('Task Name'),
+        subtitle: Text('Location'),
+        trailing: Text('9m'),
+      ),
     ),
   );
 }
@@ -113,6 +120,7 @@ class _ViewTaskState extends State<ViewTask> {
     return Scaffold(
       appBar: header(context,
           titleText: 'Tasks',
+          backgroundColor: Theme.of(context).primaryColor,
           icons: IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
@@ -126,7 +134,7 @@ class _ViewTaskState extends State<ViewTask> {
           Divider(),
           Text('List'),
           Divider(),
-          taskCard(),
+          taskCard(context),
         ],
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:AideApp/Widgets/Re-usable/header.dart';
-import 'package:AideApp/Widgets/Re-usable/progress.dart';
-
+import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:flutter/material.dart';
 
 class EditTask extends StatefulWidget {
@@ -15,6 +14,12 @@ class _EditTaskState extends State<EditTask> {
   TextEditingController colourController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   bool isUploading = false;
+  DateTime dateTime;
+  @override
+  void initState() {
+    dateTime = DateTime.now();
+    super.initState();
+  }
 
   customTextField(String text, sideIcon, controller) {
     return ListTile(
@@ -34,6 +39,50 @@ class _EditTaskState extends State<EditTask> {
       ),
     );
   }
+// 1) TODO::Handles submit data 
+  handleSubmit() {}
+// 2) Create database in firestore 
+   createPostInFirestore() {}
+
+
+  datePicker() async {
+    DateTime newDateTime = await showRoundedDatePicker(
+      context: context,
+      initialDatePickerMode: DatePickerMode.day,
+      theme: ThemeData(primarySwatch: Colors.purple),
+    );
+    if (newDateTime != null) {
+      setState(() => dateTime = newDateTime);
+    }
+    print('${dateTime.year}' + '${dateTime.month}' + '${dateTime.day}');
+
+    return newDateTime;
+  }
+
+  timePicker() async {
+    TimeOfDay newTime = await showRoundedTimePicker(
+        context: context,
+        theme: ThemeData(primarySwatch: Colors.purple),
+        initialTime: TimeOfDay.now(),
+        leftBtn: "NOW",
+        onLeftBtn: () {
+          Navigator.of(context).pop(TimeOfDay.now());
+        });
+    if (newTime != null) {
+      setState(() {
+        dateTime = DateTime(
+          // Possibly using this to save to firestore
+          dateTime.year,
+          dateTime.month,
+          dateTime.day,
+          newTime.hour,
+          newTime.minute,
+        );
+      });
+    }
+    print(newTime);
+    return newTime;
+  }
 
   addTask() {
     return Column(
@@ -44,14 +93,14 @@ class _EditTaskState extends State<EditTask> {
         Center(
             child: CircleAvatar(
                 maxRadius: 50,
-                backgroundColor: Colors.white70,
+                backgroundColor: Theme.of(context).accentColor,
                 child: CircleAvatar(
                   maxRadius: 50,
                   child: Icon(
                     Icons.add_to_photos,
                     size: 50,
                   ),
-                  backgroundColor: Colors.indigo[700],
+                  backgroundColor: Theme.of(context).accentColor,
                 ))),
         SizedBox(
           height: 50,
@@ -75,14 +124,33 @@ class _EditTaskState extends State<EditTask> {
               ),
               descriptionController,
             ),
-            customTextField(
-              "Date",
-              Icon(
-                Icons.date_range,
-                color: Colors.orange,
-                size: 35,
+            GestureDetector(
+              onTap: datePicker,
+              child: ListTile(
+                title: Text(
+                  'Choose date',
+                  style: TextStyle(color: Colors.white),
+                ),
+                leading: Icon(
+                  Icons.date_range,
+                  size: 35,
+                  color: Colors.orange,
+                ),
               ),
-              dateController,
+            ),
+            GestureDetector(
+              onTap: timePicker,
+              child: ListTile(
+                title: Text(
+                  'Choose time',
+                  style: TextStyle(color: Colors.white),
+                ),
+                leading: Icon(
+                  Icons.timer,
+                  size: 35,
+                  color: Colors.orange,
+                ),
+              ),
             ),
             customTextField(
                 "Colour code",
@@ -114,7 +182,7 @@ class _EditTaskState extends State<EditTask> {
                     "Add Task",
                     style: TextStyle(color: Colors.white),
                   ),
-                  color: Colors.blue,
+                  color: Theme.of(context).accentColor,
                   onPressed: () {},
                   icon: Icon(Icons.add_box, color: Colors.white),
                 ),
@@ -129,10 +197,20 @@ class _EditTaskState extends State<EditTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.indigo[700],
       appBar: header(context,
-          titleText: 'Add Task', backgroundColor: Colors.indigo[700]),
-      body: addTask(),
+          titleText: 'Add Task',
+          backgroundColor: Theme.of(context).primaryColor),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).accentColor,
+            ])),
+        child: addTask(),
+      ),
     );
   }
 }
