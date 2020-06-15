@@ -1,9 +1,14 @@
+import 'package:AideApp/Model/user.dart';
+import 'package:AideApp/Screens/Home.dart';
 import 'package:AideApp/Screens/TodoList/edit-task.dart';
 import 'package:AideApp/Screens/TodoList/task-details.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
 
 class ViewTask extends StatefulWidget {
+  final User currentUser;
+  
+  ViewTask({this.currentUser});
   @override
   _ViewTaskState createState() => _ViewTaskState();
 }
@@ -125,7 +130,7 @@ class _ViewTaskState extends State<ViewTask> {
             icon: Icon(Icons.add),
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => EditTask()));
+                  context, MaterialPageRoute(builder: (context) => EditTask(currentUser: currentUser,)));
             },
           )),
       body: Column(

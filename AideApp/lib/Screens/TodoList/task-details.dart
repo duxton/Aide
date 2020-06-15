@@ -1,13 +1,22 @@
+import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
+
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class TaskDetails extends StatefulWidget {
+  final User currentUser;
+
+  TaskDetails({this.currentUser});
   @override
   _TaskDetailsState createState() => _TaskDetailsState();
 }
 
 class _TaskDetailsState extends State<TaskDetails>
     with SingleTickerProviderStateMixin {
+
+      
+
   TabController _tabController;
   @override
   void initState() {
@@ -42,6 +51,8 @@ class _TaskDetailsState extends State<TaskDetails>
       ),
     );
   }
+
+ 
 
   addTask() {
     return Column(

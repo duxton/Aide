@@ -5,6 +5,7 @@ AppBar header(context,
     String titleText,
     removeBackButton = false,
     icons,
+    buttons,
     backgroundColor}) {
   return AppBar(
     automaticallyImplyLeading: removeBackButton ? false : true,
@@ -21,6 +22,7 @@ AppBar header(context,
     backgroundColor: backgroundColor,
     actions: <Widget>[
       icons == null ? Text('') : icons,
+ 
     ],
   );
 }
