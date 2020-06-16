@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
       key: _scaffoldKey,
       body: PageView(
         children: <Widget>[
-          ViewTask(currentUser: currentUser),
+          ViewTask(),
           MonthCalendar(),
           InAppPurchase(),
           Alarm(),

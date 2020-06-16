@@ -3,31 +3,14 @@ import 'package:AideApp/Screens/Home.dart';
 import 'package:AideApp/Screens/TodoList/edit-task.dart';
 import 'package:AideApp/Screens/TodoList/task-details.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
+import 'package:AideApp/Widgets/Re-usable/progress.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ViewTask extends StatefulWidget {
-  final User currentUser;
-  
-  ViewTask({this.currentUser});
   @override
   _ViewTaskState createState() => _ViewTaskState();
-}
-
-taskCard(context) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => TaskDetails()));
-    },
-      child: Card(
-      child: ListTile(
-        leading: CircleAvatar(),
-        title: Text('Task Name'),
-        subtitle: Text('Location'),
-        trailing: Text('9m'),
-      ),
-    ),
-  );
 }
 
 progressTrack(context) {
@@ -120,6 +103,41 @@ noOfTasks() {
 }
 
 class _ViewTaskState extends State<ViewTask> {
+  final String currentUserId = currentUser?.id;
+  final String name;
+  final String location;
+  final Timestamp timestamp;
+  final String ownerId;
+  final String taskId;
+
+  _ViewTaskState({
+    this.name,
+    this.location,
+    this.timestamp,
+    this.ownerId,
+    this.taskId,
+  });
+
+  buildTaskCard() {
+    return StreamBuilder(
+        stream: tasksRef
+            .document(currentUserId)
+            .collection('userTasks')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return circularProgress();
+          }
+          List<Tasks> tasks = [];
+          snapshot.data.documents.forEach((doc) {
+            tasks.add(Tasks.fromDocument(doc));
+          });
+          return ListView(
+            children: tasks,
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,7 +148,11 @@ class _ViewTaskState extends State<ViewTask> {
             icon: Icon(Icons.add),
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => EditTask(currentUser: currentUser,)));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditTask(
+                            currentUser: currentUser,
+                          )));
             },
           )),
       body: Column(
@@ -139,8 +161,44 @@ class _ViewTaskState extends State<ViewTask> {
           Divider(),
           Text('List'),
           Divider(),
-          taskCard(context),
+          Expanded(child: buildTaskCard()),
         ],
+      ),
+    );
+  }
+}
+
+class Tasks extends StatelessWidget {
+  final String name;
+  final String location;
+  final Timestamp timestamp;
+
+  Tasks({this.name, this.location, this.timestamp});
+
+  factory Tasks.fromDocument(DocumentSnapshot doc) {
+    return Tasks(
+      name: doc['name'],
+      location: doc['description'],
+      timestamp: doc['timestamp'],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => TaskDetails()));
+      },
+      child: Card(
+        child: ListTile(
+          leading: CircleAvatar(),
+          title: Text(name),
+          subtitle: Text(location),
+          trailing: Text(
+            timeago.format(timestamp.toDate()),
+          ),
+        ),
       ),
     );
   }
