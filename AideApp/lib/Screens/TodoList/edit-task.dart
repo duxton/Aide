@@ -101,12 +101,12 @@ class _EditTaskState extends State<EditTask> {
         .collection("userTasks")
         .document(tasksId)
         .setData({
-      "name" : name,
+      "name": name,
       "tasksId": tasksId,
       "ownerId": widget.currentUser.id,
       "username": widget.currentUser.username,
       "date": newDateTime,
-      "time": newTime,
+      "time": dateTime,
       "colour": color,
       "notes": notes,
       "description": description,
@@ -124,6 +124,7 @@ class _EditTaskState extends State<EditTask> {
       setState(() => this.newDateTime = newDateTime);
     }
   }
+
   Future<DateTime> datePicker() async {
     // future
     print('${dateTime.year}' + '${dateTime.month}' + '${dateTime.day}');
@@ -159,8 +160,6 @@ class _EditTaskState extends State<EditTask> {
     return currentColor.toString();
   }
 
-  
-
   handleTimePicker() async {
     TimeOfDay newTime = await showRoundedTimePicker(
         context: context,
@@ -172,15 +171,21 @@ class _EditTaskState extends State<EditTask> {
         });
     if (newTime != null) {
       setState(() {
-        this.newTime = newTime;
+        dateTime = DateTime(
+          newDateTime.year,
+          newDateTime.month,
+          newDateTime.day,
+          newTime.hour,
+          newTime.minute,
+        );
       });
     }
   }
 
   Future<String> timePicker() async {
     // future
-    print(newTime);
-    return newTime.toString();
+    print(dateTime);
+    return dateTime.toString();
   }
 
   customButton(text, function, icon) {

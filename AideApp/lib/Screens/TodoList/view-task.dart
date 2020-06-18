@@ -1,5 +1,5 @@
-import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Home.dart';
+import 'package:AideApp/Screens/TodoList/detailsScreen.dart';
 import 'package:AideApp/Screens/TodoList/edit-task.dart';
 import 'package:AideApp/Screens/TodoList/task-details.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
@@ -173,23 +173,35 @@ class Tasks extends StatelessWidget {
   final String location;
   final Timestamp timestamp;
 
-  Tasks({this.name, this.location, this.timestamp});
+  final String tasksId;
+
+  Tasks({this.name, this.location, this.timestamp, this.tasksId, this.taskDetails});
 
   factory Tasks.fromDocument(DocumentSnapshot doc) {
     return Tasks(
       name: doc['name'],
       location: doc['description'],
       timestamp: doc['timestamp'],
+      tasksId: doc['tasksId'],
     );
+  }
+
+  final TaskDetails taskDetails;
+
+  showTaskDetails(context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DetailsScreen(
+            tasksId:tasksId,
+          ),
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => TaskDetails()));
-      },
+      onTap: () => showTaskDetails(context),
       child: Card(
         child: ListTile(
           leading: CircleAvatar(),

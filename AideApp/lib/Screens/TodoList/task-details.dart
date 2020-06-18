@@ -1,35 +1,88 @@
-import 'package:AideApp/Model/user.dart';
+import 'package:AideApp/Model/tasks.dart';
+
 import 'package:AideApp/Widgets/Re-usable/header.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+
+import '../Home.dart';
 
 class TaskDetails extends StatefulWidget {
-  final User currentUser;
+  final String tasksId;
+  final String description;
+  final String color;
+  final String name;
+  final Timestamp date;
+  final Timestamp time;
 
-  TaskDetails({this.currentUser});
+  TaskDetails({
+    this.tasksId,
+    this.description,
+    this.color,
+    this.name,
+    this.date,
+    this.time,
+  });
+
+  factory TaskDetails.fromDocument(DocumentSnapshot doc) {
+    return TaskDetails(
+      tasksId: doc['tasksId'],
+      description: doc['description'],
+      color: doc['colour'],
+      name: doc['name'],
+      date: doc['date'],
+      time: doc['time'],
+    );
+  }
   @override
-  _TaskDetailsState createState() => _TaskDetailsState();
+  _TaskDetailsState createState() => _TaskDetailsState(
+        tasksId: this.tasksId,
+        description: this.description,
+        color: this.color,
+        name: this.name,
+        date: this.date,
+        time: this.time,
+      );
 }
 
 class _TaskDetailsState extends State<TaskDetails>
     with SingleTickerProviderStateMixin {
+  final String currentUserId = currentUser?.id;
+  final String ownerId;
+  final String tasksId;
+  final String description;
+  final String color;
+  final String name;
+  final Timestamp date;
+  final Timestamp time;
 
-      
-
+  _TaskDetailsState({
+    this.ownerId,
+    this.tasksId,
+    this.description,
+    this.color,
+    this.name,
+    this.date,
+    this.time,
+  });
   TabController _tabController;
   @override
   void initState() {
     _tabController = new TabController(length: 3, vsync: this);
+
     super.initState();
   }
 
   TextEditingController descriptionController = TextEditingController();
   TextEditingController colourController = TextEditingController();
   TextEditingController noteController = TextEditingController();
+  TextEditingController sub_taskController = TextEditingController();
   bool isUploading = false;
 
   bool isSwitched = false;
+  Tasks tasks;
+  bool _isChecked = false;
 
   customTextField(String text, sideIcon, controller) {
     return ListTile(
@@ -52,15 +105,13 @@ class _TaskDetailsState extends State<TaskDetails>
     );
   }
 
- 
-
   addTask() {
     return Column(
       children: <Widget>[
         Column(
           children: <Widget>[
             customTextField(
-              "Description",
+              description,
               Icon(
                 Icons.description,
                 color: Colors.grey,
@@ -69,7 +120,7 @@ class _TaskDetailsState extends State<TaskDetails>
               descriptionController,
             ),
             customTextField(
-                "Colour code",
+                color,
                 Icon(
                   Icons.color_lens,
                   color: Colors.grey,
@@ -79,6 +130,7 @@ class _TaskDetailsState extends State<TaskDetails>
             SizedBox(
               height: 50,
             ),
+            Text(DateFormat.Hm().format(time.toDate())),
           ],
         )
       ],
@@ -108,12 +160,12 @@ class _TaskDetailsState extends State<TaskDetails>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'JAN',
+                    DateFormat.MMM().format(date.toDate()),
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Theme.of(context).primaryColor),
                   ),
                   Text(
-                    '19',
+                    DateFormat.d().format(date.toDate()),
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Theme.of(context).primaryColor),
                   ),
@@ -128,14 +180,14 @@ class _TaskDetailsState extends State<TaskDetails>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'Designing consulting',
+                  name,
                   style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 20,
                       color: Colors.black),
                 ),
                 Text(
-                  'HQ AideShare',
+                  description,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
@@ -146,6 +198,58 @@ class _TaskDetailsState extends State<TaskDetails>
           ],
         ),
       ),
+    );
+  }
+
+  buildCheckBoxListTile(String name) {
+    return StreamBuilder<Object>( // TODO:: snapshot the data here from firestore 
+      stream: null,
+      builder: (context, snapshot) {
+        return Center(
+          child: CheckboxListTile(
+            title: Text(name),
+            value: _isChecked,
+            onChanged: (bool value) {
+              setState(() {
+                _isChecked = value;
+              });
+            },
+            secondary: const Icon(Icons.hourglass_empty),
+          ),
+        );
+      }
+    );
+  }
+
+  handleSubmitTask() {
+    //TODO:: Refer to edit-task.dart 
+  }
+
+  createSubQueryMap() {
+    //TODO:: Refer to likes from Fluttershare
+  }
+
+  addCheckBox(String text, sideIcon, controller) {
+    return GestureDetector(
+      onTap: () {},// TODO:: On Tap to put save the task if cant put a trailing icon to save the data to firestore 
+      child: ListTile(
+      // ListTile for input where was the photo was taken
+      leading: sideIcon,
+      title: Container(
+        height: 50,
+        width: 250.0,
+        child: TextField(
+          style: TextStyle(color: Theme.of(context).primaryColor),
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: text,
+            border: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey)),
+            hintStyle: TextStyle(color: Theme.of(context).primaryColor),
+          ),
+        ),
+      ),
+    ),
     );
   }
 
@@ -163,11 +267,12 @@ class _TaskDetailsState extends State<TaskDetails>
               ),
             ),
             Container(
-              child: Text(
-                'FILENAME',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
+                child: SingleChildScrollView(
+              child: Column(children: <Widget>[
+                addCheckBox('Add task' , Icon(Icons.add),sub_taskController ),
+                buildCheckBoxListTile('name'),
+              ]),
+            )),
             Container(
                 child: Text(
               'NOTES',
@@ -223,7 +328,7 @@ class _TaskDetailsState extends State<TaskDetails>
                           Tab(
                             child: Align(
                               alignment: Alignment.center,
-                              child: Text("Files"),
+                              child: Text("Task"),
                             ),
                           ),
                           Tab(
@@ -252,7 +357,7 @@ class _TaskDetailsState extends State<TaskDetails>
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
       child: SwitchListTile(
-        title: const Text('Notify Me'),
+        title: Text('Notify Me'),
         value: isSwitched,
         onChanged: (bool value) {
           setState(() {
@@ -269,7 +374,7 @@ class _TaskDetailsState extends State<TaskDetails>
     return Scaffold(
       appBar: header(
         context,
-        titleText: 'Details',
+        titleText: 'Task Details',
         backgroundColor: Theme.of(context).accentColor,
       ),
       body: Container(

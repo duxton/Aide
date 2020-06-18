@@ -19,6 +19,7 @@ final tasksRef = Firestore.instance.collection('tasks');
 final DateTime timestamp = DateTime.now();
 User currentUser;
 
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
