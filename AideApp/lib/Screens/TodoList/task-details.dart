@@ -1,8 +1,8 @@
-import 'package:AideApp/Model/tasks.dart';
-
 import 'package:AideApp/Widgets/Re-usable/header.dart';
+import 'package:AideApp/Widgets/Re-usable/progress.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:flutter/material.dart';
 
@@ -15,6 +15,8 @@ class TaskDetails extends StatefulWidget {
   final String name;
   final Timestamp date;
   final Timestamp time;
+  final String subTaskCreatedId;
+  final String subTaskName;
 
   TaskDetails({
     this.tasksId,
@@ -23,6 +25,8 @@ class TaskDetails extends StatefulWidget {
     this.name,
     this.date,
     this.time,
+    this.subTaskCreatedId,
+    this.subTaskName,
   });
 
   factory TaskDetails.fromDocument(DocumentSnapshot doc) {
@@ -33,6 +37,8 @@ class TaskDetails extends StatefulWidget {
       name: doc['name'],
       date: doc['date'],
       time: doc['time'],
+      subTaskName: doc['subTaskName'],
+      subTaskCreatedId: doc['subTaskId'],
     );
   }
   @override
@@ -43,6 +49,8 @@ class TaskDetails extends StatefulWidget {
         name: this.name,
         date: this.date,
         time: this.time,
+        subTaskName: this.subTaskName,
+        subTaskCreatedId: this.subTaskCreatedId,
       );
 }
 
@@ -56,7 +64,8 @@ class _TaskDetailsState extends State<TaskDetails>
   final String name;
   final Timestamp date;
   final Timestamp time;
-
+  final String subTaskName;
+  final String subTaskCreatedId;
   _TaskDetailsState({
     this.ownerId,
     this.tasksId,
@@ -65,6 +74,8 @@ class _TaskDetailsState extends State<TaskDetails>
     this.name,
     this.date,
     this.time,
+    this.subTaskName,
+    this.subTaskCreatedId,
   });
   TabController _tabController;
   @override
@@ -77,12 +88,10 @@ class _TaskDetailsState extends State<TaskDetails>
   TextEditingController descriptionController = TextEditingController();
   TextEditingController colourController = TextEditingController();
   TextEditingController noteController = TextEditingController();
-  TextEditingController sub_taskController = TextEditingController();
+  TextEditingController subtaskController = TextEditingController();
   bool isUploading = false;
-
+  String subTaskId =Uuid().v4() ;
   bool isSwitched = false;
-  Tasks tasks;
-  bool _isChecked = false;
 
   customTextField(String text, sideIcon, controller) {
     return ListTile(
@@ -201,56 +210,82 @@ class _TaskDetailsState extends State<TaskDetails>
     );
   }
 
-  buildCheckBoxListTile(String name) {
-    return StreamBuilder<Object>( // TODO:: snapshot the data here from firestore 
-      stream: null,
-      builder: (context, snapshot) {
-        return Center(
-          child: CheckboxListTile(
-            title: Text(name),
-            value: _isChecked,
-            onChanged: (bool value) {
-              setState(() {
-                _isChecked = value;
-              });
-            },
-            secondary: const Icon(Icons.hourglass_empty),
-          ),
-        );
-      }
+  handleSubmitsubTask() {
+    setState(() {
+      isUploading = true;
+    });
+    createSubTaskInFirestore(
+      subTaskname: subtaskController.text,
     );
+    subtaskController.clear();
+    setState(() {
+      isUploading = false;
+      subTaskId = Uuid().v4();
+
+    });
   }
 
-  handleSubmitTask() {
-    //TODO:: Refer to edit-task.dart 
-  }
-
-  createSubQueryMap() {
-    //TODO:: Refer to likes from Fluttershare
+  createSubTaskInFirestore({
+    String subTaskname,
+  }) {
+    subTasksRef
+        .document(currentUser.id)
+        .collection(tasksId)
+        .document(subTaskId)
+        .setData({
+      "subTaskName": subTaskname,
+      "tasksId": tasksId,
+      "subTaskId": subTaskId,
+      "ownerId": currentUser.id,
+      "username": currentUser.username,
+      "timestamp": timestamp,
+    });
   }
 
   addCheckBox(String text, sideIcon, controller) {
     return GestureDetector(
-      onTap: () {},// TODO:: On Tap to put save the task if cant put a trailing icon to save the data to firestore 
+      onTap: () => handleSubmitsubTask(),
       child: ListTile(
-      // ListTile for input where was the photo was taken
-      leading: sideIcon,
-      title: Container(
-        height: 50,
-        width: 250.0,
-        child: TextField(
-          style: TextStyle(color: Theme.of(context).primaryColor),
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: text,
-            border: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey)),
-            hintStyle: TextStyle(color: Theme.of(context).primaryColor),
+        // ListTile for input where was the photo was taken
+        leading: sideIcon,
+        title: Container(
+          height: 50,
+          width: 250.0,
+          child: TextField(
+            style: TextStyle(color: Theme.of(context).primaryColor),
+            controller: subtaskController,
+            decoration: InputDecoration(
+              hintText: text,
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey)),
+              hintStyle: TextStyle(color: Theme.of(context).primaryColor),
+            ),
           ),
         ),
       ),
-    ),
     );
+  }
+
+  buildSubTask() {
+    return StreamBuilder(
+        stream: subTasksRef
+            .document(currentUser.id)
+            .collection(tasksId)
+            .orderBy("timestamp" , descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return circularProgress();
+          }
+          List<SubTask> subTasks = [];
+          snapshot.data.documents.forEach((doc) {
+            subTasks.add(SubTask.fromDocument(doc));
+          });
+          return ListView(
+            shrinkWrap: true,
+            children: subTasks,
+          );
+        });
   }
 
   buildTabInfo() {
@@ -269,8 +304,8 @@ class _TaskDetailsState extends State<TaskDetails>
             Container(
                 child: SingleChildScrollView(
               child: Column(children: <Widget>[
-                addCheckBox('Add task' , Icon(Icons.add),sub_taskController ),
-                buildCheckBoxListTile('name'),
+                addCheckBox('Add task', Icon(Icons.add), subtaskController),
+                buildSubTask(),
               ]),
             )),
             Container(
@@ -387,6 +422,48 @@ class _TaskDetailsState extends State<TaskDetails>
               Theme.of(context).primaryColor,
             ])),
         child: buildTaskDetails(),
+      ),
+    );
+  }
+}
+
+class SubTask extends StatefulWidget {
+  final String subTaskId;
+  final String subTaskName;
+
+  SubTask({this.subTaskId, this.subTaskName});
+
+  factory SubTask.fromDocument(DocumentSnapshot doc) {
+    return SubTask(
+      subTaskId: doc['subTaskId'],
+      subTaskName: doc['subTaskName'],
+    );
+  }
+
+  @override
+  _SubTaskState createState() => _SubTaskState(
+        subTaskName: this.subTaskName,
+        subTaskId: this.subTaskId,
+      );
+}
+
+class _SubTaskState extends State<SubTask> {
+  final String subTaskId;
+  final String subTaskName;
+  bool _isChecked = false;
+  _SubTaskState({this.subTaskId, this.subTaskName});
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CheckboxListTile(
+        title: Text(widget.subTaskName),
+        value: _isChecked,
+        onChanged: (bool value) {
+          setState(() {
+            _isChecked = value;
+          });
+        },
+        secondary: const Icon(Icons.hourglass_empty),
       ),
     );
   }

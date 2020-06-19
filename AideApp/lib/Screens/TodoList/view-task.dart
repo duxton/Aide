@@ -1,5 +1,5 @@
 import 'package:AideApp/Screens/Home.dart';
-import 'package:AideApp/Screens/TodoList/detailsScreen.dart';
+import 'package:AideApp/Screens/TodoList/taskDetailsStream.dart';
 import 'package:AideApp/Screens/TodoList/edit-task.dart';
 import 'package:AideApp/Screens/TodoList/task-details.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
@@ -215,3 +215,4 @@ class Tasks extends StatelessWidget {
     );
   }
 }
+
