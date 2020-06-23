@@ -1,10 +1,9 @@
 import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Alarm/Alarm.dart';
-import 'package:AideApp/Screens/Calendar/month_view.dart';
+import '../Screens/Calendar/TableCalendar.dart';
 import 'package:AideApp/Screens/InAppPayment/In_App_purchase.dart';
 import 'package:AideApp/Screens/Registration/View_profile.dart';
 import 'package:AideApp/Screens/Registration/create_account.dart';
-import 'package:AideApp/Screens/TodoList/edit-task.dart';
 import 'package:AideApp/Screens/TodoList/view-task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -19,7 +18,6 @@ final tasksRef = Firestore.instance.collection('tasks');
 final subTasksRef = Firestore.instance.collection('sub-tasks');
 final DateTime timestamp = DateTime.now();
 User currentUser;
-
 
 class Home extends StatefulWidget {
   @override
@@ -119,7 +117,7 @@ class _HomeState extends State<Home> {
       body: PageView(
         children: <Widget>[
           ViewTask(),
-          MonthCalendar(),
+          Calendar(),
           InAppPurchase(),
           Alarm(),
           ViewProfile(),
@@ -204,4 +202,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return isAuth ? buildAuthScreen() : buildUnAuthScreen();
   }
+}
+
+class MyHomePage {
 }
