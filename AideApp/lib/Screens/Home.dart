@@ -1,5 +1,6 @@
 import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Alarm/Alarm.dart';
+import 'package:AideApp/Screens/OwnedProduct/AllProduct.dart';
 import '../Screens/Calendar/TableCalendar.dart';
 import 'package:AideApp/Screens/InAppPayment/In_App_purchase.dart';
 import 'package:AideApp/Screens/Registration/View_profile.dart';
@@ -117,7 +118,7 @@ class _HomeState extends State<Home> {
       body: PageView(
         children: <Widget>[
           ViewTask(),
-          Calendar(),
+          AllProduct(),
           InAppPurchase(),
           Alarm(),
           ViewProfile(),
@@ -135,7 +136,7 @@ class _HomeState extends State<Home> {
               icon: Icon(Icons.work),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today),
+              icon: Icon(Icons.apps),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),

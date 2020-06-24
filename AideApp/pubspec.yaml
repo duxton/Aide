@@ -35,6 +35,7 @@ dependencies:
   timeago: ^2.0.26
   intl: ^0.16.1
   table_calendar: ^2.2.3
+  carousel_slider: ^2.2.1
 
 
   # The following adds the Cupertino Icons font to your application.

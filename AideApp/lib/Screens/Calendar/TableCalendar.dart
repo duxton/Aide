@@ -348,26 +348,24 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   //   );
   // }
 
-      Widget _buildEventList() {
-        return StreamBuilder(
-          stream:
-              tasksRef.document(currentUser.id).collection('userTasks').snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return circularProgress();
-            }
-            List<CalendarTasks> tasks = [];
-            snapshot.data.documents.forEach((doc) {
-              tasks.add(CalendarTasks.fromDocument(doc));
-            });
-            return ListView(
-              children: tasks,
-            );
-          },
+  Widget _buildEventList() {
+    return StreamBuilder(
+      stream:
+          tasksRef.document(currentUser.id).collection('userTasks').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return circularProgress();
+        }
+        List<CalendarTasks> tasks = [];
+        snapshot.data.documents.forEach((doc) {
+          tasks.add(CalendarTasks.fromDocument(doc));
+        });
+        return ListView(
+          children: tasks,
         );
-      }
-    
-  
+      },
+    );
+  }
 }
 
 class CalendarTasks extends StatelessWidget {
