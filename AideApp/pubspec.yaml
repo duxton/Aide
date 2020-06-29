@@ -36,6 +36,8 @@ dependencies:
   intl: ^0.16.1
   table_calendar: ^2.2.3
   carousel_slider: ^2.2.1
+  credit_card_slider: ^1.0.0+4
+  flutter_speed_dial: ^1.2.5
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,6 +65,7 @@ flutter:
     - assets/images/activity_feed.svg
     - assets/images/no_content.svg
     - assets/images/milky-way.jpg
+    - assets/images/background_sample.jpg
 
   # fonts:
   #   - family: Schyler

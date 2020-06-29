@@ -22,7 +22,6 @@ AppBar header(context,
     backgroundColor: backgroundColor,
     actions: <Widget>[
       icons == null ? Text('') : icons,
- 
     ],
   );
 }

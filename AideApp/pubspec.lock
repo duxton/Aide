@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.1"
+  auto_size_text:
+    dependency: transitive
+    description:
+      name: auto_size_text
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -85,6 +92,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  credit_card_slider:
+    dependency: "direct main"
+    description:
+      name: credit_card_slider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+4"
   crypto:
     dependency: transitive
     description:
@@ -165,6 +179,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  flutter_speed_dial:
+    dependency: "direct main"
+    description:
+      name: flutter_speed_dial
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter

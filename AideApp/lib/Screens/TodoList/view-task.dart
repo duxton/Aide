@@ -159,7 +159,7 @@ class _ViewTaskState extends State<ViewTask> {
         children: <Widget>[
           progressTrack(context),
           Divider(),
-          Text('List'),
+          Text('Tasks'),
           Divider(),
           Expanded(child: buildTaskCard()),
         ],

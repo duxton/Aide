@@ -1,15 +1,17 @@
 import 'package:AideApp/Screens/InAppPayment/ProductDetails.dart';
+import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/FinancialAdvisor.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
 
 class AllProduct extends StatelessWidget {
+  static const routeName = '/AllProduct';
   customProduct(context, text) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductDetails(),
-          )),
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          '/Financial_Assistance'
+        );
+      },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
