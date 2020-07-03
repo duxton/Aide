@@ -22,18 +22,6 @@ class _FinancialAssistanceState extends State<FinancialAssistance>
   Color kBlue = Color(0xFF4AA3F2);
   Color kPurple = Color(0xFFAF92FB);
 
-  // int _currentIndex = 0;
-
-  // List<CreditCard> _creditCards = [];
-
-  // List<T> map<T>(List list, Function handler) {
-  //   List<T> result = [];
-  //   for (var i = 0; i < list.length; i++) {
-  //     result.add(handler(i, list[i]));
-  //   }
-  //   return result;
-  // }
-
   ScrollController scrollController;
   bool dialVisible = true;
 
@@ -52,106 +40,6 @@ class _FinancialAssistanceState extends State<FinancialAssistance>
             ScrollDirection.forward);
       });
 
-    //   _creditCards = [
-    //     CreditCard(
-    //       cardBackground: SolidColorCardBackground(Colors.purple),
-    //       cardNetworkType: CardNetworkType.visaBasic,
-    //       cardHolderName: 'The boring developer',
-    //       cardNumber: '1234 **** **** ****',
-    //       company: CardCompany.sbi,
-    //       showChip: false,
-    //       validity: Validity(
-    //         validThruMonth: 1,
-    //         validThruYear: 21,
-    //         validFromMonth: 1,
-    //         validFromYear: 16,
-    //       ),
-    //     ),
-    //     CreditCard(
-    //       cardBackground: SolidColorCardBackground(kRed.withOpacity(0.4)),
-    //       cardNetworkType: CardNetworkType.mastercard,
-    //       cardHolderName: 'Gursheesh Singh',
-    //       cardNumber: '2434 2434 **** ****',
-    //       company: CardCompany.kotak,
-    //       validity: Validity(
-    //         validThruMonth: 1,
-    //         validThruYear: 21,
-    //       ),
-    //     ),
-    //     CreditCard(
-    //       cardBackground: GradientCardBackground(LinearGradient(
-    //         begin: Alignment.centerLeft,
-    //         end: Alignment.centerRight,
-    //         colors: [kBlue, kPurple],
-    //         stops: [0.3, 0.95],
-    //       )),
-    //       cardNetworkType: CardNetworkType.mastercard,
-    //       cardHolderName: 'Very Very very boring devloper',
-    //       cardNumber: '4567',
-    //       company: CardCompany.sbiCard,
-    //       validity: Validity(
-    //         validThruMonth: 2,
-    //         validThruYear: 2021,
-    //       ),
-    //     ),
-    //     CreditCard(
-    //       cardBackground: ImageCardBackground(
-    //           AssetImage('assets/images/background_sample.jpg')),
-    //       cardNetworkType: CardNetworkType.mastercard,
-    //       cardHolderName: 'John Doe',
-    //       cardNumber: '2434 2434 **** ****',
-    //       company: CardCompany.virgin,
-    //       validity: Validity(
-    //         validThruMonth: 1,
-    //         validThruYear: 20,
-    //       ),
-    //     ),
-    //   ];
-    // }
-
-    // creditCardSlider() {
-    //   return Column(
-    //     children: <Widget>[
-    //       CarouselSlider(
-    //         options: CarouselOptions(
-    //           height: 200.0,
-    //           autoPlay: false,
-    //           autoPlayInterval: Duration(seconds: 3),
-    //           autoPlayAnimationDuration: Duration(milliseconds: 800),
-    //           autoPlayCurve: Curves.fastOutSlowIn,
-    //           aspectRatio: 2.0,
-    //           onPageChanged: (index, reason) {
-    //             setState(() {
-    //               _currentIndex = index;
-    //             });
-    //           },
-    //         ),
-    //         items: _creditCards.map((card) {
-    //           return Builder(builder: (BuildContext context) {
-    //             return Container(
-    //               height: MediaQuery.of(context).size.height * 0.30,
-    //               width: MediaQuery.of(context).size.width,
-    //               child: card,
-    //             );
-    //           });
-    //         }).toList(),
-    //       ),
-    //       Row(
-    //         mainAxisAlignment: MainAxisAlignment.center,
-    //         children: map<Widget>(_creditCards, (index, url) {
-    //           return Container(
-    //             width: 10.0,
-    //             height: 10.0,
-    //             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-    //             decoration: BoxDecoration(
-    //               shape: BoxShape.circle,
-    //               color: _currentIndex == index ? Colors.blueAccent : Colors.grey,
-    //             ),
-    //           );
-    //         }),
-    //       ),
-    //     ],
-    //   );
     }
 
     transactionCard() {

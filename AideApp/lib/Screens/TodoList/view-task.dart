@@ -6,12 +6,16 @@ import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:AideApp/Widgets/Re-usable/progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:intl/intl.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ViewTask extends StatefulWidget {
   @override
   _ViewTaskState createState() => _ViewTaskState();
 }
+
+DateTime now = DateTime.now();
+String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
 progressTrack(context) {
   return new Center(
@@ -43,10 +47,10 @@ progressTrack(context) {
                     ),
                   ),
                   Text(
-                    '10-6-2020',
+                    formattedDate,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 12,
+                      fontSize: 20,
                     ),
                   ),
                 ],
@@ -88,12 +92,14 @@ noOfTasks() {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              taskNo('24', 'personal'),
-              taskNo('16', 'business'),
+              taskNo('24', 'personal'), // TODO:: Total Task Caculation  SUN
+              taskNo('16',
+                  'business'), // TODO:: Total Task different categories Caculation  SUN
+              //TODO:: Create a category button  SUN
             ],
           ),
           Text(
-            'Progress 65% done ',
+            'Progress 65% done ', // TODO:: Total Task completion Caculation Maybe change to circularProgress
             style: TextStyle(color: Colors.white, fontSize: 10),
           ),
         ],
@@ -109,6 +115,7 @@ class _ViewTaskState extends State<ViewTask> {
   final Timestamp timestamp;
   final String ownerId;
   final String taskId;
+  final Timestamp date;
 
   _ViewTaskState({
     this.name,
@@ -116,6 +123,7 @@ class _ViewTaskState extends State<ViewTask> {
     this.timestamp,
     this.ownerId,
     this.taskId,
+    this.date,
   });
 
   buildTaskCard() {
@@ -123,6 +131,7 @@ class _ViewTaskState extends State<ViewTask> {
         stream: tasksRef
             .document(currentUserId)
             .collection('userTasks')
+            .orderBy("date", descending: false)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -172,10 +181,18 @@ class Tasks extends StatelessWidget {
   final String name;
   final String location;
   final Timestamp timestamp;
-
+  final Timestamp date;
   final String tasksId;
+  final String color;
 
-  Tasks({this.name, this.location, this.timestamp, this.tasksId, this.taskDetails});
+  Tasks(
+      {this.name,
+      this.location,
+      this.timestamp,
+      this.tasksId,
+      this.date,
+      this.color,
+      this.taskDetails});
 
   factory Tasks.fromDocument(DocumentSnapshot doc) {
     return Tasks(
@@ -183,6 +200,8 @@ class Tasks extends StatelessWidget {
       location: doc['description'],
       timestamp: doc['timestamp'],
       tasksId: doc['tasksId'],
+      date: doc['date'],
+      color: doc['colour'],
     );
   }
 
@@ -193,26 +212,70 @@ class Tasks extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (context) => DetailsScreen(
-            tasksId:tasksId,
+            tasksId: tasksId,
           ),
         ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => showTaskDetails(context),
-      child: Card(
-        child: ListTile(
-          leading: CircleAvatar(),
-          title: Text(name),
-          subtitle: Text(location),
-          trailing: Text(
-            timeago.format(timestamp.toDate()),
+    String valueString = color.split('(0x')[1].split(')')[0]; // kind of hacky..
+    int value = int.parse(valueString, radix: 16);
+    Color otherColor = new Color(value);
+    DateTime dateTime = date.toDate();
+    String formatDateTime = DateFormat('MMM-dd').format(dateTime);
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      actionExtentRatio: 0.25,
+      actions: <Widget>[
+        // IconSlideAction(
+        //   caption: 'Archive',
+        //   color: Colors.blue,
+        //   icon: Icons.archive,
+        //   onTap: () => _showSnackBar(context,'Archive'),
+        // ),
+        IconSlideAction(
+          caption: 'Delete',
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: () => _showSnackBar(context,
+              'Delete'), // TODO:: Implement delete function and reflect on database TMR
+        ),
+      ],
+      secondaryActions: <Widget>[
+        // IconSlideAction(
+        //   caption: 'More',
+        //   color: Colors.black45,
+        //   icon: Icons.more_horiz,
+        //   onTap: () => _showSnackBar(context,'More'),
+        // ),
+        IconSlideAction(
+          caption: 'Complete',
+          color: Colors.green,
+          icon: Icons.check,
+          onTap: () => _showSnackBar(context,
+              'Complete'), // TODO:: Implement complete function and reflect on database TMR
+        ),
+      ],
+      child: GestureDetector(
+        onTap: () => showTaskDetails(context),
+        child: Card(
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: otherColor,
+            ),
+            title: Text(name),
+            subtitle: Text(location),
+            trailing: Text(
+              formatDateTime,
+            ),
           ),
         ),
       ),
     );
   }
-}
 
+  void _showSnackBar(BuildContext context, String text) {
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+}

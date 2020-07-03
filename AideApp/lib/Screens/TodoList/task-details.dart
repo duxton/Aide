@@ -1,5 +1,6 @@
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:AideApp/Widgets/Re-usable/progress.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
@@ -78,10 +79,11 @@ class _TaskDetailsState extends State<TaskDetails>
     this.subTaskCreatedId,
   });
   TabController _tabController;
+
   @override
   void initState() {
     _tabController = new TabController(length: 3, vsync: this);
-
+    descriptionController = TextEditingController(text: description);
     super.initState();
   }
 
@@ -90,24 +92,179 @@ class _TaskDetailsState extends State<TaskDetails>
   TextEditingController noteController = TextEditingController();
   TextEditingController subtaskController = TextEditingController();
   bool isUploading = false;
-  String subTaskId =Uuid().v4() ;
+  String subTaskId = Uuid().v4();
   bool isSwitched = false;
+  bool _isEditingText = false;
 
-  customTextField(String text, sideIcon, controller) {
-    return ListTile(
-      // ListTile for input where was the photo was taken
-      leading: sideIcon,
-      title: Container(
-        height: 50,
-        width: 250.0,
-        child: TextField(
-          style: TextStyle(color: Theme.of(context).primaryColor),
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: text,
-            border: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey)),
-            hintStyle: TextStyle(color: Theme.of(context).primaryColor),
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    colourController.dispose();
+    noteController.dispose();
+    subtaskController.dispose();
+    super.dispose();
+  }
+
+  customTextField(String text, sideIcon, controller, keyboardType) {
+    if (_isEditingText) {
+      return ListTile(
+        // ListTile for input where was the photo was taken
+        leading: sideIcon,
+        title: Container(
+          height: 50,
+          width: 250.0,
+          child: TextField(
+            keyboardType: keyboardType,
+            style: TextStyle(color: Theme.of(context).primaryColor),
+            controller: controller,
+            onChanged: (value) {
+              handleUpdateSubmit();
+            },
+            decoration: InputDecoration(
+              hintText: text,
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey)),
+              hintStyle: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+          ),
+        ),
+      );
+    }
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingText = true;
+        });
+      },
+      child: ListTile(
+        leading: sideIcon,
+        title: Text(
+          text,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color pickerColor = Color(0xFF03A9F4);
+  Color currentColor = Color(0xff443a49);
+// ValueChanged<Color> callback
+  void changeColor(Color color) {
+    setState(() => pickerColor = color);
+  }
+
+  handleColorPicker() {
+    showDialog(
+      context: context,
+      child: AlertDialog(
+        title: const Text('Pick a color!'),
+        content: SingleChildScrollView(
+          child: BlockPicker(
+            pickerColor: currentColor,
+            onColorChanged: changeColor,
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: const Text('Got it'),
+            onPressed: () {
+              setState(() => currentColor = pickerColor);
+              handleUpdateSubmit();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<String> colorPicker() async {
+    print(currentColor);
+    return currentColor.toString();
+  }
+
+  handleUpdateSubmit() async {
+    setState(() {
+      isUploading = true;
+    });
+    String color = await colorPicker();
+    updateTaskData(
+      color: color,
+      description: descriptionController.text,
+    );
+    colourController.clear();
+    setState(() {
+      isUploading = false;
+      // Navigator.pop(context);
+    });
+  }
+
+  updateTaskData({
+    String color,
+    String description,
+  }) {
+    tasksRef
+        .document(currentUser.id)
+        .collection("userTasks")
+        .document(tasksId)
+        .updateData({
+      "colour": color,
+      "description": description,
+    });
+  }
+
+  customButton(text, function, icon) {
+    String valueString = color.split('(0x')[1].split(')')[0]; // kind of hacky..
+    int value = int.parse(valueString, radix: 16);
+    Color otherColor = new Color(value);
+
+    setState(() {
+      otherColor = pickerColor;
+    });
+    if (_isEditingText) {
+      return Container(
+        // Button for current location
+        alignment: Alignment.center,
+        child: ButtonTheme(
+          minWidth: MediaQuery.of(context).size.width * 0.6,
+          height: 45,
+          child: RaisedButton.icon(
+            label: Text(
+              text,
+              style: TextStyle(color: Colors.white),
+            ),
+            color: otherColor,
+            onPressed: function,
+            icon: Icon(icon, color: Colors.white),
+          ),
+        ),
+      );
+    }
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingText = true;
+        });
+      },
+      child: Container(
+        // Button for current location
+        alignment: Alignment.center,
+        child: ButtonTheme(
+          minWidth: MediaQuery.of(context).size.width * 0.6,
+          height: 45,
+          child: RaisedButton.icon(
+            label: Text(
+              text,
+              style: TextStyle(color: Colors.white),
+            ),
+            color: otherColor,
+            onPressed: function,
+            icon: Icon(icon, color: Colors.white),
           ),
         ),
       ),
@@ -120,22 +277,19 @@ class _TaskDetailsState extends State<TaskDetails>
         Column(
           children: <Widget>[
             customTextField(
-              description,
-              Icon(
-                Icons.description,
-                color: Colors.grey,
-                size: 20,
-              ),
-              descriptionController,
-            ),
-            customTextField(
-                color,
+                description,
                 Icon(
-                  Icons.color_lens,
+                  Icons.description,
                   color: Colors.grey,
                   size: 20,
                 ),
-                colourController),
+                descriptionController,
+                TextInputType.multiline),
+            customButton(
+              'Change Color',
+              handleColorPicker,
+              Icons.history,
+            ),
             SizedBox(
               height: 50,
             ),
@@ -196,7 +350,7 @@ class _TaskDetailsState extends State<TaskDetails>
                       color: Colors.black),
                 ),
                 Text(
-                  description,
+                  description, // TODO:: Change this to location once GeoLocation functions is implemented MON
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
@@ -221,7 +375,6 @@ class _TaskDetailsState extends State<TaskDetails>
     setState(() {
       isUploading = false;
       subTaskId = Uuid().v4();
-
     });
   }
 
@@ -271,7 +424,7 @@ class _TaskDetailsState extends State<TaskDetails>
         stream: subTasksRef
             .document(currentUser.id)
             .collection(tasksId)
-            .orderBy("timestamp" , descending: true)
+            .orderBy("timestamp", descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -392,7 +545,8 @@ class _TaskDetailsState extends State<TaskDetails>
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
       child: SwitchListTile(
-        title: Text('Notify Me'),
+        title: Text(
+            'Notify Me'), // TODO:: Implement function if user pressed it, it will remind user 30 minutes before the time MON
         value: isSwitched,
         onChanged: (bool value) {
           setState(() {
@@ -407,11 +561,14 @@ class _TaskDetailsState extends State<TaskDetails>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: header(
-        context,
-        titleText: 'Task Details',
-        backgroundColor: Theme.of(context).accentColor,
-      ),
+      key: _scaffoldKey,
+      appBar: header(context,
+          titleText: 'Task Details',
+          backgroundColor: Theme.of(context).accentColor,
+          icons: IconButton(
+            icon: Icon(Icons.check),
+            onPressed: isUploading ? null : () => handleUpdateSubmit(),
+          )),
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(

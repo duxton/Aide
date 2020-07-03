@@ -1,9 +1,8 @@
 import 'dart:ui';
 
-import 'package:AideApp/Model/income_card.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_credit_card/flutter_credit_card.dart';
+
 
 class AddCard extends StatefulWidget {
   static const routeName = '/Add_Card';
