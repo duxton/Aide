@@ -92,10 +92,10 @@ noOfTasks() {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              taskNo('24', 'personal'), // TODO:: Total Task Caculation  SUN
+              taskNo('24', 'personal'), // TODO:: Total Task Caculation  TMR
               taskNo('16',
-                  'business'), // TODO:: Total Task different categories Caculation  SUN
-              //TODO:: Create a category button  SUN
+                  'business'), // TODO:: Total Task different categories Caculation  TMR
+              //TODO:: Create a category button  TMR
             ],
           ),
           Text(
@@ -126,22 +126,43 @@ class _ViewTaskState extends State<ViewTask> {
     this.date,
   });
 
+  @override
+  void initState() {
+    super.initState();
+    checkIfCompletedOrNot();
+  }
+
+  bool isCompleted = false;
+  checkIfCompletedOrNot() async {
+    DocumentSnapshot ds = await tasksRef
+        .document(currentUser.id)
+        .collection("userTasks")
+        .document(this.taskId)
+        .get();
+    isCompleted = ds.exists;
+  }
+
   buildTaskCard() {
     return StreamBuilder(
         stream: tasksRef
             .document(currentUserId)
             .collection('userTasks')
             .orderBy("date", descending: false)
+          //  .where("isCompleted", isEqualTo: false)
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (!snapshot.hasData && isCompleted) {
             return circularProgress();
           }
           List<Tasks> tasks = [];
+          //  var isEmpty = tasks.isEmpty;// TODO:: Check if all tasks isCompleted to true; TMR
+          //* Use index on firestore 
           snapshot.data.documents.forEach((doc) {
             tasks.add(Tasks.fromDocument(doc));
           });
-          return ListView(
+          return
+              // isEmpty != null ? Text('No more tasks') :
+              ListView(
             children: tasks,
           );
         });
@@ -217,6 +238,58 @@ class Tasks extends StatelessWidget {
         ));
   }
 
+  deleteTask() {
+    tasksRef
+        .document(currentUser.id)
+        .collection('userTasks')
+        .document(tasksId)
+        .get()
+        .then((value) => {
+              if (value.exists)
+                {
+                  value.reference.delete(),
+                }
+            });
+  }
+
+  completedTask() {
+    tasksRef
+        .document(currentUser.id)
+        .collection("userTasks")
+        .document(tasksId)
+        .updateData({
+      "isCompleted": true,
+    });
+  }
+
+  handleDeleteTask(parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text('Comfirm to delete this task?'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  deleteTask();
+                },
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     String valueString = color.split('(0x')[1].split(')')[0]; // kind of hacky..
@@ -238,8 +311,7 @@ class Tasks extends StatelessWidget {
           caption: 'Delete',
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () => _showSnackBar(context,
-              'Delete'), // TODO:: Implement delete function and reflect on database TMR
+          onTap: () => handleDeleteTask(context),
         ),
       ],
       secondaryActions: <Widget>[
@@ -250,11 +322,10 @@ class Tasks extends StatelessWidget {
         //   onTap: () => _showSnackBar(context,'More'),
         // ),
         IconSlideAction(
-          caption: 'Complete',
+          caption: 'Done',
           color: Colors.green,
           icon: Icons.check,
-          onTap: () => _showSnackBar(context,
-              'Complete'), // TODO:: Implement complete function and reflect on database TMR
+          onTap: () => completedTask(),
         ),
       ],
       child: GestureDetector(

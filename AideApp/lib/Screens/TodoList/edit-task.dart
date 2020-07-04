@@ -69,6 +69,7 @@ class _EditTaskState extends State<EditTask> {
     DateTime date = await datePicker();
     String time = await timePicker();
     String color = await colorPicker();
+    bool isCompleted = false;
     createPostInFirestore(
       name: nameController.text,
       notes: noteController.text,
@@ -76,6 +77,7 @@ class _EditTaskState extends State<EditTask> {
       color: color,
       newDateTime: date,
       newTime: time,
+      isCompleted :isCompleted,
     );
     nameController.clear();
     noteController.clear();
@@ -95,6 +97,7 @@ class _EditTaskState extends State<EditTask> {
     DateTime newDateTime,
     String newTime,
     String color,
+    bool isCompleted,
   }) {
     tasksRef
         .document(widget.currentUser.id)
@@ -111,6 +114,7 @@ class _EditTaskState extends State<EditTask> {
       "notes": notes,
       "description": description,
       "timestamp": timestamp,
+      "isCompleted" : isCompleted,
     });
   }
 
