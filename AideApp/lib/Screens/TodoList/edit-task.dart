@@ -233,7 +233,7 @@ class _EditTaskState extends State<EditTask> {
               ),
               Expanded(
                 flex: 1,
-                child: customButton( // TODO:: Add location or current location MON
+                child: customButton( // TODO:: Add location or current location TUE
                   'Add location',
                   () {},
                   Icons.location_on,

@@ -350,7 +350,7 @@ class _TaskDetailsState extends State<TaskDetails>
                       color: Colors.black),
                 ),
                 Text(
-                  description, // TODO:: Change this to location once GeoLocation functions is implemented MON
+                  description, // TODO:: Change this to location once GeoLocation functions is implemented TUE
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
@@ -546,7 +546,7 @@ class _TaskDetailsState extends State<TaskDetails>
       width: MediaQuery.of(context).size.width * 0.8,
       child: SwitchListTile(
         title: Text(
-            'Notify Me'), // TODO:: Implement function if user pressed it, it will remind user 30 minutes before the time MON
+            'Notify Me'), // TODO:: Implement function if user pressed it, it will remind user 30 minutes before the time TUE
         value: isSwitched,
         onChanged: (bool value) {
           setState(() {

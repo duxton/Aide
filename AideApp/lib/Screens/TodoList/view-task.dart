@@ -17,97 +17,6 @@ class ViewTask extends StatefulWidget {
 DateTime now = DateTime.now();
 String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
-progressTrack(context) {
-  return new Center(
-    child: new Container(
-      width: MediaQuery.of(context).size.width * 1,
-      height: MediaQuery.of(context).size.height * 0.3,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/milky-way.jpg'),
-          fit: BoxFit.fill,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          Expanded(
-            flex: 2,
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Your Things',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 50,
-                    ),
-                  ),
-                  Text(
-                    formattedDate,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          noOfTasks(),
-        ],
-      ),
-    ),
-  );
-}
-
-taskNo(String numberTask, String taskCat) {
-  return Column(
-    children: <Widget>[
-      Text(
-        numberTask,
-        style: TextStyle(color: Colors.white, fontSize: 16.0),
-      ),
-      Text(
-        taskCat,
-        style: TextStyle(color: Colors.white, fontSize: 10.0),
-      ),
-    ],
-  );
-}
-
-noOfTasks() {
-  return Expanded(
-    flex: 1,
-    child: Container(
-      decoration: BoxDecoration(color: Colors.black45.withOpacity(0.3)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              taskNo('24', 'personal'), // TODO:: Total Task Caculation  TMR
-              taskNo('16',
-                  'business'), // TODO:: Total Task different categories Caculation  TMR
-              //TODO:: Create a category button  TMR
-            ],
-          ),
-          Text(
-            'Progress 65% done ', // TODO:: Total Task completion Caculation Maybe change to circularProgress
-            style: TextStyle(color: Colors.white, fontSize: 10),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 class _ViewTaskState extends State<ViewTask> {
   final String currentUserId = currentUser?.id;
   final String name;
@@ -126,10 +35,135 @@ class _ViewTaskState extends State<ViewTask> {
     this.date,
   });
 
+  int totalTask = 0;
+  int totalColourTask = 0;
+  bool isWaiting = true;
+
   @override
   void initState() {
     super.initState();
     checkIfCompletedOrNot();
+    getTotalTask();
+  }
+
+  getTotalTask() async {
+    QuerySnapshot snapshot = await tasksRef
+        .document(currentUser.id)
+        .collection('userTasks')
+        .getDocuments();
+
+    setState(() {
+      isWaiting = false;
+      totalTask = snapshot.documents.length;
+    });
+  }
+
+  getTaskByColor() async {
+    //* * Think if this is necessaries
+    QuerySnapshot snapshot = await tasksRef
+        .document(currentUser.id)
+        .collection('userTasks')
+        .where("colour",
+            isEqualTo: "MaterialColor(primary value: Color(0xff03a9f4))")
+        .getDocuments();
+
+    setState(() {
+      isWaiting = false;
+      totalColourTask = snapshot.documents.length;
+    });
+  }
+
+  progressTrack(context) {
+    return new Center(
+      child: new Container(
+        width: MediaQuery.of(context).size.width * 1,
+        height: MediaQuery.of(context).size.height * 0.3,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/milky-way.jpg'),
+            fit: BoxFit.fill,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Expanded(
+              flex: 2,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Your Things',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 50,
+                      ),
+                    ),
+                    Text(
+                      formattedDate,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            noOfTasks(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  taskNo(String numberTask, String taskCat) {
+    return Column(
+      children: <Widget>[
+        Text(
+          numberTask,
+          style: TextStyle(color: Colors.white, fontSize: 16.0),
+        ),
+        Text(
+          taskCat,
+          style: TextStyle(color: Colors.white, fontSize: 10.0),
+        ),
+      ],
+    );
+  }
+
+  noOfTasks() {
+    return Expanded(
+      flex: 1,
+      child: Container(
+        decoration: BoxDecoration(color: Colors.black45.withOpacity(0.3)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                taskNo(isWaiting ? '??' : totalTask.toString(),
+                    'Total'), // TODO:: Total Task Caculation
+                taskNo(isWaiting ? '??' : totalTask.toString(), 'Work'),
+                taskNo(totalColourTask.toString(),
+                    'Personal'), // TODO:: Total Task by different colour Caculation  TDY
+                //* *  Think of it more before deciding what to put here
+              ],
+            ),
+            Text(
+              'Progress 65% done ', // TODO:: Total Task completion Caculation Maybe change to circularProgress
+              style: TextStyle(color: Colors.white, fontSize: 10),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   bool isCompleted = false;
@@ -147,16 +181,16 @@ class _ViewTaskState extends State<ViewTask> {
         stream: tasksRef
             .document(currentUserId)
             .collection('userTasks')
-            .orderBy("date", descending: false)
-          //  .where("isCompleted", isEqualTo: false)
+            .orderBy("date", descending: true)
+            //  .where("isCompleted", isEqualTo: false)
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData && isCompleted) {
+          if (!snapshot.hasData) {
             return circularProgress();
           }
           List<Tasks> tasks = [];
-          //  var isEmpty = tasks.isEmpty;// TODO:: Check if all tasks isCompleted to true; TMR
-          //* Use index on firestore 
+          //  var isEmpty = tasks.isEmpty;// TODO:: Check if all tasks isCompleted to true; TDY
+          //* Use index on firestore
           snapshot.data.documents.forEach((doc) {
             tasks.add(Tasks.fromDocument(doc));
           });
