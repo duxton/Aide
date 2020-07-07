@@ -18,6 +18,7 @@ class TaskDetails extends StatefulWidget {
   final Timestamp time;
   final String subTaskCreatedId;
   final String subTaskName;
+  final String location;
 
   TaskDetails({
     this.tasksId,
@@ -28,6 +29,7 @@ class TaskDetails extends StatefulWidget {
     this.time,
     this.subTaskCreatedId,
     this.subTaskName,
+    this.location,
   });
 
   factory TaskDetails.fromDocument(DocumentSnapshot doc) {
@@ -38,6 +40,7 @@ class TaskDetails extends StatefulWidget {
       name: doc['name'],
       date: doc['date'],
       time: doc['time'],
+      location: doc['location'],
       subTaskName: doc['subTaskName'],
       subTaskCreatedId: doc['subTaskId'],
     );
@@ -50,6 +53,7 @@ class TaskDetails extends StatefulWidget {
         name: this.name,
         date: this.date,
         time: this.time,
+        location: this.location,
         subTaskName: this.subTaskName,
         subTaskCreatedId: this.subTaskCreatedId,
       );
@@ -63,6 +67,7 @@ class _TaskDetailsState extends State<TaskDetails>
   final String description;
   final String color;
   final String name;
+  final String location;
   final Timestamp date;
   final Timestamp time;
   final String subTaskName;
@@ -72,6 +77,7 @@ class _TaskDetailsState extends State<TaskDetails>
     this.tasksId,
     this.description,
     this.color,
+    this.location,
     this.name,
     this.date,
     this.time,
@@ -350,7 +356,7 @@ class _TaskDetailsState extends State<TaskDetails>
                       color: Colors.black),
                 ),
                 Text(
-                  description, // TODO:: Change this to location once GeoLocation functions is implemented TUE
+                  location,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
@@ -546,7 +552,7 @@ class _TaskDetailsState extends State<TaskDetails>
       width: MediaQuery.of(context).size.width * 0.8,
       child: SwitchListTile(
         title: Text(
-            'Notify Me'), // TODO:: Implement function if user pressed it, it will remind user 30 minutes before the time TUE
+            'Notify Me'), // TODO:: Implement function if user pressed it, it will remind user 30 minutes before the time
         value: isSwitched,
         onChanged: (bool value) {
           setState(() {

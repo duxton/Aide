@@ -149,7 +149,7 @@ class _ViewTaskState extends State<ViewTask> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 taskNo(isWaiting ? '??' : totalTask.toString(),
-                    'Total'), // TODO:: Total Task Caculation
+                    'Total'),
                 taskNo(isWaiting ? '??' : totalTask.toString(), 'Work'),
                 taskNo(totalColourTask.toString(),
                     'Personal'), // TODO:: Total Task by different colour Caculation  TDY
@@ -181,7 +181,7 @@ class _ViewTaskState extends State<ViewTask> {
         stream: tasksRef
             .document(currentUserId)
             .collection('userTasks')
-            .orderBy("date", descending: true)
+            .orderBy("date", descending: false)
             //  .where("isCompleted", isEqualTo: false)
             .snapshots(),
         builder: (context, snapshot) {
@@ -252,7 +252,7 @@ class Tasks extends StatelessWidget {
   factory Tasks.fromDocument(DocumentSnapshot doc) {
     return Tasks(
       name: doc['name'],
-      location: doc['description'],
+      location: doc['location'],
       timestamp: doc['timestamp'],
       tasksId: doc['tasksId'],
       date: doc['date'],
@@ -378,9 +378,5 @@ class Tasks extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _showSnackBar(BuildContext context, String text) {
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 }

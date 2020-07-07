@@ -5,6 +5,7 @@ import 'package:AideApp/Widgets/Re-usable/progress.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:uuid/uuid.dart';
 
 class EditTask extends StatefulWidget {
@@ -22,6 +23,7 @@ class _EditTaskState extends State<EditTask> {
   TextEditingController dateController = TextEditingController();
   TextEditingController colourController = TextEditingController();
   TextEditingController noteController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
   bool isUploading = false;
   DateTime dateTime;
   DateTime newDateTime;
@@ -77,12 +79,14 @@ class _EditTaskState extends State<EditTask> {
       color: color,
       newDateTime: date,
       newTime: time,
-      isCompleted :isCompleted,
+      isCompleted: isCompleted,
+      location: locationController.text,
     );
     nameController.clear();
     noteController.clear();
     descriptionController.clear();
     colourController.clear();
+    locationController.clear();
     setState(() {
       isUploading = false;
       tasksId = Uuid().v4();
@@ -95,6 +99,7 @@ class _EditTaskState extends State<EditTask> {
     String notes,
     String description,
     DateTime newDateTime,
+    String location,
     String newTime,
     String color,
     bool isCompleted,
@@ -111,10 +116,11 @@ class _EditTaskState extends State<EditTask> {
       "date": newDateTime,
       "time": dateTime,
       "colour": color,
+      "location": location,
       "notes": notes,
       "description": description,
       "timestamp": timestamp,
-      "isCompleted" : isCompleted,
+      "isCompleted": isCompleted,
     });
   }
 
@@ -187,14 +193,12 @@ class _EditTaskState extends State<EditTask> {
   }
 
   Future<String> timePicker() async {
-    // future
     print(dateTime);
     return dateTime.toString();
   }
 
   customButton(text, function, icon) {
     return Container(
-      // Button for current location
       alignment: Alignment.center,
       child: ButtonTheme(
         minWidth: MediaQuery.of(context).size.width * 0.6,
@@ -217,26 +221,15 @@ class _EditTaskState extends State<EditTask> {
       children: <Widget>[
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          height: expanded ? 200 : 0,
+          height: expanded ? 150 : 0,
           child: Column(
             children: <Widget>[
               Expanded(
                 flex: 1,
                 child: customButton(
-                  'Add sub-task',
-                  () {},
-                  Icons.add,
-                ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Expanded(
-                flex: 1,
-                child: customButton( // TODO:: Add location or current location TUE
                   'Add location',
-                  () {},
-                  Icons.location_on,
+                  getUserLocation,
+                  Icons.my_location,
                 ),
               ),
               SizedBox(
@@ -314,6 +307,15 @@ class _EditTaskState extends State<EditTask> {
               ),
               descriptionController,
             ),
+            customTextField(
+              "Location",
+              Icon(
+                Icons.location_on,
+                color: Colors.orange,
+                size: 35,
+              ),
+              locationController,
+            ),
             SizedBox(
               height: 20,
             ),
@@ -340,7 +342,6 @@ class _EditTaskState extends State<EditTask> {
           height: 15,
         ),
         Container(
-          // Button for current location
           alignment: Alignment.center,
           child: ButtonTheme(
             minWidth: MediaQuery.of(context).size.width * 0.8,
@@ -358,6 +359,19 @@ class _EditTaskState extends State<EditTask> {
         ),
       ],
     );
+  }
+
+  getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemarks = await Geolocator()
+        .placemarkFromCoordinates(position.latitude, position.longitude);
+    Placemark placemark = placemarks[0];
+    String completeAddress =
+        '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
+    print(completeAddress);
+    String formattedAddress = "${placemark.locality}, ${placemark.country}";
+    locationController.text = formattedAddress;
   }
 
   @override
