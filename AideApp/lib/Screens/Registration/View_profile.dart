@@ -1,3 +1,4 @@
+import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
 
 class ViewProfile extends StatefulWidget {
@@ -8,8 +9,6 @@ class ViewProfile extends StatefulWidget {
 class _ViewProfileState extends State<ViewProfile> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[Text('View Profile')],
-    );
+    return Scaffold(appBar: header(context, titleText:'Profile'),);
   }
 }

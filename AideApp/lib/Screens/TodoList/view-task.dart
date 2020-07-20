@@ -148,8 +148,7 @@ class _ViewTaskState extends State<ViewTask> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                taskNo(isWaiting ? '??' : totalTask.toString(),
-                    'Total'),
+                taskNo(isWaiting ? '??' : totalTask.toString(), 'Total'),
                 taskNo(isWaiting ? '??' : totalTask.toString(), 'Work'),
                 taskNo(totalColourTask.toString(),
                     'Personal'), // TODO:: Total Task by different colour Caculation  TDY
