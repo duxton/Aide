@@ -1,4 +1,3 @@
-
 import 'package:AideApp/Screens/Alarm/Alarm.dart';
 import 'package:AideApp/Screens/Home.dart';
 import 'package:AideApp/Screens/OwnedProduct/AllProduct.dart';
@@ -44,21 +43,18 @@ class MyApp extends StatelessWidget {
       title: 'FlutterShare',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Color.fromRGBO(138, 48, 127,1),
-        accentColor: Color.fromRGBO(121, 167, 211,1)
-      ),
+          primaryColor: Color.fromRGBO(0, 0, 1, 1),
+          accentColor: Color.fromRGBO(192, 192, 192, 0.5)),
       routes: {
         FinancialAssistance.routeName: (ctx) => FinancialAssistance(),
         AllProduct.routeName: (ctx) => AllProduct(),
         AddCard.routeName: (ctx) => AddCard(),
         AddTransactions.routeName: (ctx) => AddTransactions(),
-
       },
       home: ChangeNotifierProvider<MenuInfo>(
         create: (context) => MenuInfo(MenuType.clock),
-       child: Home(),
+        child: Home(),
       ),
     );
   }
 }
-

@@ -45,6 +45,7 @@ dependencies:
   nova_alarm_plugin: ^0.1.0
   flutter_local_notifications: ^1.4.4+2
   provider: ^4.3.1
+  circular_profile_avatar: ^1.0.6
   dotted_border: ^1.0.6
 
 
@@ -79,7 +80,8 @@ flutter:
     - assets/images/clock_icon.png
     - assets/images/stopwatch_icon.png
     - assets/images/timer_icon.png
-
+    - assets/images/macbookProductive.jpeg
+    - assets/images/woodenTexture.jpg
   # fonts:
   #   - family: Schyler
   #     fonts:

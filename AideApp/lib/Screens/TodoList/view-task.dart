@@ -80,9 +80,10 @@ class _ViewTaskState extends State<ViewTask> {
         height: MediaQuery.of(context).size.height * 0.3,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/milky-way.jpg'),
+            image: AssetImage('assets/images/macbookProductive.jpeg'),// ** Put pictures that looks productive or aesthically pleasing
             fit: BoxFit.fill,
           ),
+
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
