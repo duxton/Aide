@@ -1,15 +1,20 @@
+import 'dart:ui';
+
 import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Alarm/Alarm.dart';
 import 'package:AideApp/Screens/OwnedProduct/AllProduct.dart';
 import 'package:AideApp/Screens/InAppPayment/In_App_purchase.dart';
 import 'package:AideApp/Screens/Registration/View_profile.dart';
 import 'package:AideApp/Screens/Registration/create_account.dart';
+import 'package:AideApp/Screens/Registration/sign_up.dart';
 import 'package:AideApp/Screens/TodoList/view-task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'Registration/log_in.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final StorageReference storageRef = FirebaseStorage.instance.ref();
@@ -24,32 +29,28 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-login() {
-  googleSignIn.signIn();
-}
-
-logout() {
-  googleSignIn.signOut();
-}
-
 class _HomeState extends State<Home> {
   bool isAuth = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int pageIndex = 0;
   PageController pageController;
 
-  handleSignIn(GoogleSignInAccount account) async {
-    if (account != null) {
-      await createUserInFirestore();
-      print(account);
-      setState(() {
-        isAuth = true;
-      });
-    } else {
-      setState(() {
-        isAuth = false;
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController();
+    //Dectects when user sign in
+    googleSignIn.onCurrentUserChanged.listen((account) {
+      handleSignIn(account);
+    }, onError: (err) {
+      print('Error Signing in: $err');
+    });
+    // Reaauthenticate user when app is opened ( works like token )
+    googleSignIn.signInSilently(suppressErrors: false).then((account) {
+      handleSignIn(account);
+    }).catchError((err) {
+      print(err);
+    });
   }
 
   createUserInFirestore() async {
@@ -80,27 +81,38 @@ class _HomeState extends State<Home> {
     currentUser = User.fromDocument(doc);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    pageController = PageController();
-    googleSignIn.onCurrentUserChanged.listen((account) {
-      handleSignIn(account);
-    }, onError: (err) {
-      print('Error Signing in: $err');
-    });
-    // Reaauthenticate user when app is opened ( works like token )
-    googleSignIn.signInSilently(suppressErrors: false).then((account) {
-      handleSignIn(account);
-    }).catchError((err) {
-      print(err);
-    });
-  }
-
   onPageChanged(int pageIndex) {
     setState(() {
       this.pageIndex = pageIndex;
     });
+  }
+
+  login() {
+    googleSignIn.signIn();
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  handleSignIn(GoogleSignInAccount account) async {
+    if (account != null) {
+      await createUserInFirestore();
+      print(account);
+      setState(() {
+        isAuth = true;
+      });
+    } else {
+      setState(() {
+        isAuth = false;
+      });
+    }
+  }
+
+  logout() {
+    googleSignIn.signOut();
   }
 
   onTap(int pageIndex) {
@@ -192,6 +204,62 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 25,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => LogIn()));
+              },
+              child: Container(
+                width: 260.0,
+                height: 60.0,
+                child: Center(
+                  child: Text(
+                    'Log In with email',
+                    style: TextStyle(fontSize: 25),
+                  ),
+                ),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: Colors.grey),
+              ),
+            ),
+             SizedBox(
+              height: 25,
+            ),
+            Text('If haven\'t sign up'),
+            Divider(
+              indent: 50.0,
+              endIndent: 50.0,
+              color: Colors.black,
+              thickness: 2,
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => SignUp()));
+                },
+                child: Container(
+                  width: 260.0,
+                  height: 60.0,
+                  child: Center(
+                    child: Text(
+                      'Sign Up with email',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      color: Colors.grey),
+                ),
+              ),
+            ),
+
           ],
         ),
       ),
@@ -203,4 +271,3 @@ class _HomeState extends State<Home> {
     return isAuth ? buildAuthScreen() : buildUnAuthScreen();
   }
 }
-

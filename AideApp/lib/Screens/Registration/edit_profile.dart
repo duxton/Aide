@@ -1,3 +1,4 @@
+import 'package:AideApp/Screens/Home.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
@@ -6,9 +7,14 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  logout() async {
+    await googleSignIn.signOut();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
+  }
+
   customTextField(String text, controller, labelText) {
     return Padding(
-      padding: const EdgeInsets.all(25.0),
+      padding: const EdgeInsets.all(15.0),
       child: ListTile(
         // ListTile for input where was the photo was taken
         title: Container(
@@ -52,20 +58,23 @@ class _EditProfileState extends State<EditProfile> {
           CircleAvatar(
             radius: 75,
           ),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  customTextField("Name", nameController, 'Name'),
-                  customTextField(
-                      "Date of birth", dateOfBirthController, 'Date Of Birth'),
-                  customTextField(
-                      "Phone number", phoneNumberController, 'Phone number'),
-                  customTextField("Job Title", jobTitleController, 'Job Title'),
-                ],
+          Expanded(
+            flex: 2,
+                      child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    customTextField("Name", nameController, 'Name'),
+                    customTextField(
+                        "Date of birth", dateOfBirthController, 'Date Of Birth'),
+                    customTextField(
+                        "Phone number", phoneNumberController, 'Phone number'),
+                    customTextField("Job Title", jobTitleController, 'Job Title'),
+                  ],
+                ),
               ),
             ),
           ),
@@ -86,6 +95,22 @@ class _EditProfileState extends State<EditProfile> {
                 icon: Icon(Icons.update, color: Colors.black),
               ),
             ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: FlatButton.icon(
+                onPressed: logout,
+                icon: Icon(
+                  Icons.cancel,
+                  color: Colors.red,
+                ),
+                label: Text(
+                  'Logout',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 20,
+                  ),
+                )),
           ),
         ],
       ),

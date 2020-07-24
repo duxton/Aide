@@ -1,10 +1,18 @@
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
 
-class FinancialSettings extends StatelessWidget {
+class FinancialSettings extends StatefulWidget {
+  @override
+  _FinancialSettingsState createState() => _FinancialSettingsState();
+}
+
+class _FinancialSettingsState extends State<FinancialSettings> {
   TextEditingController salaryRange = TextEditingController();
+
   TextEditingController description = TextEditingController();
+
   TextEditingController fromWhere = TextEditingController();
+
   TextEditingController usedFor = TextEditingController();
 
   customTextField(String text, sideIcon, controller, labelController) {
