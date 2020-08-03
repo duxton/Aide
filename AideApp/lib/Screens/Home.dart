@@ -1,11 +1,13 @@
 import 'dart:ui';
 
+import 'package:AideApp/Model/email_authentication.dart';
 import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Alarm/Alarm.dart';
 import 'package:AideApp/Screens/OwnedProduct/AllProduct.dart';
 import 'package:AideApp/Screens/InAppPayment/In_App_purchase.dart';
 import 'package:AideApp/Screens/Registration/View_profile.dart';
 import 'package:AideApp/Screens/Registration/create_account.dart';
+import 'package:AideApp/Screens/Registration/login_signup_page.dart';
 import 'package:AideApp/Screens/Registration/sign_up.dart';
 import 'package:AideApp/Screens/TodoList/view-task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,12 +26,24 @@ final subTasksRef = Firestore.instance.collection('sub-tasks');
 final DateTime timestamp = DateTime.now();
 User currentUser;
 
+enum AuthStatus {
+  NOT_DETERMINED,
+  NOT_LOGGED_IN,
+  LOGGED_IN,
+}
+
 class Home extends StatefulWidget {
+  Home({this.auth});
+
+  final BaseAuth auth;
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
+  String _userId = "";
   bool isAuth = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int pageIndex = 0;
@@ -38,6 +52,16 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
+    widget.auth.getCurrentUser().then((user) {
+      setState(() {
+        if (user != null) {
+          _userId = user?.uid;
+        }
+        authStatus =
+            user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
+      });
+    });
     pageController = PageController();
     //Dectects when user sign in
     googleSignIn.onCurrentUserChanged.listen((account) {
@@ -50,6 +74,24 @@ class _HomeState extends State<Home> {
       handleSignIn(account);
     }).catchError((err) {
       print(err);
+    });
+  }
+
+  void loginCallback() {
+    widget.auth.getCurrentUser().then((user) {
+      setState(() {
+        _userId = user.uid.toString();
+      });
+    });
+    setState(() {
+      authStatus = AuthStatus.LOGGED_IN;
+    });
+  }
+
+  void logoutCallback() {
+    setState(() {
+      authStatus = AuthStatus.NOT_LOGGED_IN;
+      _userId = "";
     });
   }
 
@@ -102,11 +144,11 @@ class _HomeState extends State<Home> {
       await createUserInFirestore();
       print(account);
       setState(() {
-        isAuth = true;
+        authStatus = AuthStatus.LOGGED_IN;
       });
     } else {
       setState(() {
-        isAuth = false;
+        authStatus = AuthStatus.NOT_LOGGED_IN;
       });
     }
   }
@@ -166,7 +208,7 @@ class _HomeState extends State<Home> {
     // );
   }
 
-  buildUnAuthScreen() {
+  Scaffold buildUnAuthScreen() {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -210,7 +252,12 @@ class _HomeState extends State<Home> {
             GestureDetector(
               onTap: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => LogIn()));
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginSignupPage(
+                              auth: widget.auth,
+                              loginCallback: loginCallback,
+                            )));
               },
               child: Container(
                 width: 260.0,
@@ -226,7 +273,7 @@ class _HomeState extends State<Home> {
                     color: Colors.grey),
               ),
             ),
-             SizedBox(
+            SizedBox(
               height: 25,
             ),
             Text('If haven\'t sign up'),
@@ -241,8 +288,8 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.all(15.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => SignUp()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SignUp()));
                 },
                 child: Container(
                   width: 260.0,
@@ -259,7 +306,6 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-
           ],
         ),
       ),
@@ -268,6 +314,22 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return isAuth ? buildAuthScreen() : buildUnAuthScreen();
+    switch (authStatus) {
+      case AuthStatus.NOT_DETERMINED:
+        return buildUnAuthScreen();
+        break;
+
+      case AuthStatus.NOT_LOGGED_IN:
+        return buildUnAuthScreen();
+        break;
+
+      case AuthStatus.LOGGED_IN:
+        if (_userId.length > 0 && _userId != null) {
+          return buildAuthScreen();
+        }
+        break;
+      default:
+        return buildUnAuthScreen();
+    }
   }
 }

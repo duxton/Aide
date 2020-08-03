@@ -25,11 +25,11 @@ dependencies:
     sdk: flutter
   animator: 0.1.4
   cached_network_image: ^2.2.0+1
-  cloud_firestore: ^0.9.7+2
+  cloud_firestore: ^0.13.7
   flutter_rounded_date_picker: ^1.0.4
   image_picker: ^0.6.0+2 
-  firebase_storage: ^2.1.0+1
-  firebase_auth: ^0.8.3
+  firebase_storage: ^3.1.6
+  firebase_auth: ^0.16.1
   google_sign_in: ^4.5.1
   flutter_colorpicker: ^0.3.4
   timeago: ^2.0.26

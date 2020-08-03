@@ -1,3 +1,4 @@
+import 'package:AideApp/Model/email_authentication.dart';
 import 'package:AideApp/Screens/Home.dart';
 import 'package:AideApp/Screens/OwnedProduct/AllProduct.dart';
 import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/Add_Card.dart';
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
       },
       home: ChangeNotifierProvider<MenuInfo>(
         create: (context) => MenuInfo(MenuType.clock),
-        child: Home(),
+        child: Home( auth: new Auth(),),
       ),
     );
   }
