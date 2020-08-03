@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:AideApp/Screens/Registration/sign_up.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class BaseAuth {

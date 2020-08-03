@@ -8,7 +8,6 @@ import 'package:AideApp/Screens/InAppPayment/In_App_purchase.dart';
 import 'package:AideApp/Screens/Registration/View_profile.dart';
 import 'package:AideApp/Screens/Registration/create_account.dart';
 import 'package:AideApp/Screens/Registration/login_signup_page.dart';
-import 'package:AideApp/Screens/Registration/sign_up.dart';
 import 'package:AideApp/Screens/TodoList/view-task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -16,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import 'Registration/log_in.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final StorageReference storageRef = FirebaseStorage.instance.ref();
@@ -283,28 +281,6 @@ class _HomeState extends State<Home> {
               color: Colors.black,
               thickness: 2,
               height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignUp()));
-                },
-                child: Container(
-                  width: 260.0,
-                  height: 60.0,
-                  child: Center(
-                    child: Text(
-                      'Sign Up with email',
-                      style: TextStyle(fontSize: 25),
-                    ),
-                  ),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: Colors.grey),
-                ),
-              ),
             ),
           ],
         ),
