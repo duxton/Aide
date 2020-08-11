@@ -47,6 +47,7 @@ dependencies:
   provider: ^4.3.1
   circular_profile_avatar: ^1.0.6
   dotted_border: ^1.0.6
+  firebase_dynamic_links: ^0.5.3
 
 
   # The following adds the Cupertino Icons font to your application.

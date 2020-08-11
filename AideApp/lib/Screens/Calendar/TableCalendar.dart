@@ -16,7 +16,7 @@ final Map<DateTime, List> _holidays = {
 
 class Calendar extends StatefulWidget {
   Calendar({Key key, this.title}) : super(key: key);
-
+  static const routeName = '/Calender';
   final String title;
 
   @override
@@ -120,6 +120,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Tittle'),
       ),
       body: Column(

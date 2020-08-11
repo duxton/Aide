@@ -12,7 +12,7 @@ AppBar header(context,
     title: Text(
       isAppTittle ? 'Aide' : titleText,
       style: TextStyle(
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: isAppTittle ? "Signatra" : '',
         fontSize: isAppTittle ? 50.0 : 22.0,
       ),

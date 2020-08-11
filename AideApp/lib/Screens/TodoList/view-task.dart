@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ViewTask extends StatefulWidget {
+  static const routeName = '/View_Task';
   @override
   _ViewTaskState createState() => _ViewTaskState();
 }
@@ -80,10 +81,10 @@ class _ViewTaskState extends State<ViewTask> {
         height: MediaQuery.of(context).size.height * 0.3,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/macbookProductive.jpeg'),// ** Put pictures that looks productive or aesthically pleasing
+            image: AssetImage(
+                'assets/images/macbookProductive.jpeg'), // ** Put pictures that looks productive or aesthically pleasing
             fit: BoxFit.fill,
           ),
-
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -202,10 +203,12 @@ class _ViewTaskState extends State<ViewTask> {
         });
   }
 
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: header(context,
+          removeBackButton: false,
           titleText: 'Tasks',
           backgroundColor: Theme.of(context).primaryColor,
           icons: IconButton(

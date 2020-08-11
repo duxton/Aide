@@ -34,6 +34,8 @@ class _EditTaskState extends State<EditTask> {
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
 
+  Color backgroundColorPicker = Color(0xffF5F5DC);
+
 // ValueChanged<Color> callback
   void changeColor(Color color) {
     setState(() => pickerColor = color);
@@ -52,12 +54,12 @@ class _EditTaskState extends State<EditTask> {
       title: Container(
         width: 250.0,
         child: TextField(
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black),
           controller: controller,
           decoration: InputDecoration(
             hintText: text,
             border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white),
+            hintStyle: TextStyle(color: Colors.black),
           ),
         ),
       ),
@@ -128,7 +130,7 @@ class _EditTaskState extends State<EditTask> {
     DateTime newDateTime = await showRoundedDatePicker(
       context: context,
       initialDatePickerMode: DatePickerMode.day,
-      theme: ThemeData(primarySwatch: Colors.purple),
+      theme: ThemeData(primaryColor:backgroundColorPicker ),
     );
     if (newDateTime != null) {
       setState(() => this.newDateTime = newDateTime);
@@ -173,7 +175,7 @@ class _EditTaskState extends State<EditTask> {
   handleTimePicker() async {
     TimeOfDay newTime = await showRoundedTimePicker(
         context: context,
-        theme: ThemeData(primarySwatch: Colors.purple),
+        theme: ThemeData(primaryColor: backgroundColorPicker),
         initialTime: TimeOfDay.now(),
         leftBtn: "NOW",
         onLeftBtn: () {
@@ -208,7 +210,7 @@ class _EditTaskState extends State<EditTask> {
             text,
             style: TextStyle(color: Colors.white),
           ),
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).accentColor,
           onPressed: function,
           icon: Icon(icon, color: Colors.white),
         ),
@@ -276,14 +278,15 @@ class _EditTaskState extends State<EditTask> {
         Center(
             child: CircleAvatar(
                 maxRadius: 50,
-                backgroundColor: Theme.of(context).accentColor,
+                backgroundColor: Colors.grey[350],
                 child: CircleAvatar(
                   maxRadius: 50,
                   child: Icon(
                     Icons.add_to_photos,
                     size: 50,
+                    color: Colors.white,
                   ),
-                  backgroundColor: Theme.of(context).accentColor,
+                  backgroundColor:Colors.grey[350],
                 ))),
         SizedBox(
           height: 30,
@@ -294,7 +297,7 @@ class _EditTaskState extends State<EditTask> {
                 "Name",
                 Icon(
                   Icons.work,
-                  color: Colors.orange,
+                  color: Colors.brown[200],
                   size: 35,
                 ),
                 nameController),
@@ -302,7 +305,7 @@ class _EditTaskState extends State<EditTask> {
               "Description",
               Icon(
                 Icons.description,
-                color: Colors.orange,
+                 color: Colors.brown[200],
                 size: 35,
               ),
               descriptionController,
@@ -311,7 +314,7 @@ class _EditTaskState extends State<EditTask> {
               "Location",
               Icon(
                 Icons.location_on,
-                color: Colors.orange,
+                 color: Colors.brown[200],
                 size: 35,
               ),
               locationController,
@@ -384,13 +387,7 @@ class _EditTaskState extends State<EditTask> {
       ),
       body: Container(
         decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).accentColor,
-            ])),
+           color: Colors.white),
         child: Column(
           children: <Widget>[
             isUploading ? linearProgress() : Text(""),

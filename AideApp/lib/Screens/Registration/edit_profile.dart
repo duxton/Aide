@@ -1,17 +1,37 @@
-import 'package:AideApp/Screens/Home.dart';
+import 'package:AideApp/Model/email_authentication.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
+  EditProfile({Key key, this.auth, this.userId, this.onSignedOut})
+      : super(key: key);
+
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
+  final String userId;
   @override
   _EditProfileState createState() => _EditProfileState();
 }
 
 class _EditProfileState extends State<EditProfile> {
-  logout() async {
-    await googleSignIn.signOut();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
+  // logout() async {
+  //   await googleSignIn.signOut();
+  //   Navigator.pushReplacement(
+  //       context, MaterialPageRoute(builder: (context) => Home()));
+  // }
+
+   _signOut() async {
+    try {
+      await widget.auth.signOut();
+      widget.onSignedOut();
+    } catch (e) {
+      print(e);
+    }
   }
 
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   customTextField(String text, controller, labelText) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
@@ -24,7 +44,7 @@ class _EditProfileState extends State<EditProfile> {
             controller: controller,
             decoration: InputDecoration(
               labelText: labelText,
-              labelStyle: TextStyle(color: Colors.blue[500]),
+              labelStyle: TextStyle(color: Colors.black),
               hintText: text,
               hintStyle: TextStyle(color: Colors.grey),
             ),
@@ -60,7 +80,7 @@ class _EditProfileState extends State<EditProfile> {
           ),
           Expanded(
             flex: 2,
-                      child: Padding(
+            child: Padding(
               padding: const EdgeInsets.all(15.0),
               child: Container(
                 child: Column(
@@ -68,11 +88,12 @@ class _EditProfileState extends State<EditProfile> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     customTextField("Name", nameController, 'Name'),
-                    customTextField(
-                        "Date of birth", dateOfBirthController, 'Date Of Birth'),
+                    customTextField("Date of birth", dateOfBirthController,
+                        'Date Of Birth'),
                     customTextField(
                         "Phone number", phoneNumberController, 'Phone number'),
-                    customTextField("Job Title", jobTitleController, 'Job Title'),
+                    customTextField(
+                        "Job Title", jobTitleController, 'Job Title'),
                   ],
                 ),
               ),
@@ -90,7 +111,7 @@ class _EditProfileState extends State<EditProfile> {
                   "Update Profile",
                   style: TextStyle(color: Colors.black),
                 ),
-                color: Theme.of(context).accentColor,
+                color: Colors.grey[200],
                 onPressed: () {},
                 icon: Icon(Icons.update, color: Colors.black),
               ),
@@ -99,7 +120,7 @@ class _EditProfileState extends State<EditProfile> {
           Padding(
             padding: EdgeInsets.all(16),
             child: FlatButton.icon(
-                onPressed: logout,
+                onPressed: _signOut,
                 icon: Icon(
                   Icons.cancel,
                   color: Colors.red,

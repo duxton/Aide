@@ -157,8 +157,8 @@ class _TaskDetailsState extends State<TaskDetails>
     );
   }
 
-  Color pickerColor = Color(0xFF03A9F4);
-  Color currentColor = Color(0xff443a49);
+  Color pickerColor = Color.fromRGBO(126,25,27,0.5);// Change color "new color"
+  Color currentColor = Color.fromRGBO(126,25,27,0.5);
 // ValueChanged<Color> callback
   void changeColor(Color color) {
     setState(() => pickerColor = color);
@@ -500,7 +500,7 @@ class _TaskDetailsState extends State<TaskDetails>
                     borderRadius: BorderRadius.all(
                       Radius.circular(25),
                     ),
-                    color: Colors.deepPurple[100],
+                    color: Colors.brown[200],
                   ),
                   child: DefaultTabController(
                     length: 3,
@@ -570,20 +570,14 @@ class _TaskDetailsState extends State<TaskDetails>
       key: _scaffoldKey,
       appBar: header(context,
           titleText: 'Task Details',
-          backgroundColor: Theme.of(context).accentColor,
+          backgroundColor: Theme.of(context).primaryColor,
           icons: IconButton(
             icon: Icon(Icons.check),
             onPressed: isUploading ? null : () => handleUpdateSubmit(),
           )),
       body: Container(
         decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-              Theme.of(context).accentColor,
-              Theme.of(context).primaryColor,
-            ])),
+            color: Colors.grey[200]),
         child: buildTaskDetails(),
       ),
     );

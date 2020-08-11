@@ -1,19 +1,25 @@
-import 'package:AideApp/Screens/Home.dart';
+
+import 'package:AideApp/Model/email_authentication.dart';
 import 'package:AideApp/Screens/Registration/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+
 class ViewProfile extends StatefulWidget {
+  ViewProfile({Key key, this.auth, this.userId, this.onSignedOut})
+      : super(key: key);
+
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
+  final String userId;
   @override
   _ViewProfileState createState() => _ViewProfileState();
 }
 
 class _ViewProfileState extends State<ViewProfile> {
-  logout() async {
-    await googleSignIn.signOut();
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
-  }
+
+ 
 
   customTextField(String text, sideIcon, controller) {
     return ListTile(
@@ -42,30 +48,33 @@ class _ViewProfileState extends State<ViewProfile> {
 
   Color colorsIcon = Colors.blueGrey;
 
+    _signOut() async {
+    try {
+      await widget.auth.signOut();
+      widget.onSignedOut();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.edit),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => EditProfile()));
-          },
-        ),
-        backgroundColor: Colors.transparent,
-        flexibleSpace: Image(
-          image: AssetImage('assets/images/macbookProductive.jpeg'),
-          fit: BoxFit.cover,
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.center_focus_strong),
-            onPressed: () {},
-          ),
-        
-        ],
-      ),
+    // appBar:  AppBar(
+    //     elevation: 0,
+    //     backgroundColor: Colors.white,
+    //     title: new Text(
+    //       'Aide',
+    //       style: TextStyle(color: Colors.black),
+    //     ),
+    //     actions: <Widget>[
+    //       new IconButton(
+    //         color: Colors.black,
+    //         icon: Icon(Icons.exit_to_app),
+    //         onPressed: _signOut,
+    //       ),
+    //     ],
+    //   ),
       body:Container(
           height: MediaQuery.of(context).size.height * 0.80,
           child: Column(

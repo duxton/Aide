@@ -80,12 +80,15 @@ class _InAppPurchaseState extends State<InAppPurchase> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: header(context,
-            titleText: 'Shopping',
-            icons: IconButton(
-              icon: Icon(Icons.shopping_cart),
-              onPressed: () {},
-            )),
+        // appBar: header(context,
+        //     titleText: 'Shopping',
+        //     backgroundColor: Colors.white,
+        //      removeBackButton: true,
+        //     icons: IconButton(
+        //       icon: Icon(Icons.shopping_cart),
+        //       color: Colors.black,
+        //       onPressed: () {},
+        //     )),
         body: GridView.count(
           primary: false,
           padding: const EdgeInsets.all(20),

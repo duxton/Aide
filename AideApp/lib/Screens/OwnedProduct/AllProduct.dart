@@ -1,16 +1,30 @@
+import 'dart:ui';
+
 import 'package:AideApp/Widgets/Re-usable/header.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class AllProduct extends StatelessWidget {
+class AllProduct extends StatefulWidget {
   static const routeName = '/AllProduct';
-  customProduct(context, text) {
+
+  @override
+  _AllProductState createState() => _AllProductState();
+}
+
+class _AllProductState extends State<AllProduct> {
+  final double itemHeight = 175;
+
+  final double itemWidth = 150;
+
+  customProduct(context, text, routeName) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(
-          '/Financial_Assistance'
+          routeName,
         );
       },
       child: Container(
+        height: MediaQuery.of(context).size.height * 0.25,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: Colors.white,
@@ -22,11 +36,13 @@ class AllProduct extends StatelessWidget {
             ),
           ],
         ),
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(25),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Image(
+              height: 110,
               image: AssetImage('assets/images/milky-way.jpg'),
               fit: BoxFit.fill,
             ),
@@ -40,30 +56,61 @@ class AllProduct extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            Text(
-              'RM 5/month',
-              style: TextStyle(color: Colors.grey),
-            ),
           ],
         ),
       ),
     );
   }
 
+  TextEditingController searchController = TextEditingController();
+
+  Future<QuerySnapshot> searchResultsFuture;
+
+  handleSearch(String query) {}
+
+  clearSearch() {
+    searchController.clear();
+  }
+
+  AppBar buildSearchField() {
+    return AppBar(
+      toolbarHeight: 75,
+      backgroundColor: Colors.white,
+      title: TextFormField(
+        controller: searchController,
+        decoration: InputDecoration(
+            hintText: "Search for product....",
+            filled: true,
+            prefixIcon: Icon(Icons.android),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.clear),
+              onPressed: clearSearch,
+            )),
+        onFieldSubmitted: handleSearch,
+      ),
+    );
+  }
+
+  //bool get wantKeepAlive => true; // ** Keep state of this page if no changes
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: header(context, titleText: 'Assistance'),
+      appBar: buildSearchField(),
       body: GridView.count(
+        childAspectRatio: (itemWidth / itemHeight),
         primary: false,
         padding: const EdgeInsets.all(20),
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
         crossAxisCount: 2,
         children: <Widget>[
-          customProduct(context, 'Financial Advisor'),
-          customProduct(context, 'Themes'),
-          customProduct(context, 'Gym assistance'),
+          customProduct(context, 'Financial', '/Financial_Assistance'),
+          customProduct(context, 'Todo Task', '/View_Task'),
+          customProduct(context, 'Calender', '/Calender'),
+          customProduct(context, 'Gym assistance', '/View_Task'),
+          customProduct(context, 'Themes', '/View_Task'),
+          customProduct(context, 'Gym assistance', '/View_Task'),
         ],
       ),
     );
