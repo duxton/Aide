@@ -1,6 +1,4 @@
 import 'package:AideApp/Model/email_authentication.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
@@ -21,17 +19,6 @@ class _EditProfileState extends State<EditProfile> {
   //       context, MaterialPageRoute(builder: (context) => Home()));
   // }
 
-   _signOut() async {
-    try {
-      await widget.auth.signOut();
-      widget.onSignedOut();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   customTextField(String text, controller, labelText) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
@@ -116,22 +103,6 @@ class _EditProfileState extends State<EditProfile> {
                 icon: Icon(Icons.update, color: Colors.black),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: FlatButton.icon(
-                onPressed: _signOut,
-                icon: Icon(
-                  Icons.cancel,
-                  color: Colors.red,
-                ),
-                label: Text(
-                  'Logout',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 20,
-                  ),
-                )),
           ),
         ],
       ),

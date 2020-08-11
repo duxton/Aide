@@ -1,16 +1,10 @@
 import 'package:AideApp/Model/email_authentication.dart';
 import 'package:AideApp/Model/user.dart';
-
-import 'package:AideApp/Screens/Registration/create_account.dart';
 import 'package:AideApp/Screens/Registration/login_signup_page.dart';
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-
 import 'AuthScreen.dart';
 
 // final GoogleSignIn googleSignIn = GoogleSignIn();

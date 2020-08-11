@@ -18,10 +18,7 @@ class ViewProfile extends StatefulWidget {
 }
 
 class _ViewProfileState extends State<ViewProfile> {
-
- 
-
-  customTextField(String text, sideIcon, controller) {
+customTextField(String text, sideIcon, controller) {
     return ListTile(
       // ListTile for input where was the photo was taken
       leading: sideIcon,
@@ -47,15 +44,6 @@ class _ViewProfileState extends State<ViewProfile> {
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
   Color colorsIcon = Colors.blueGrey;
-
-    _signOut() async {
-    try {
-      await widget.auth.signOut();
-      widget.onSignedOut();
-    } catch (e) {
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
