@@ -97,12 +97,15 @@ class _AuthScreenState extends State<AuthScreen> {
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.apps),
+              title: Text('Functions')
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),
+              title: Text('Purchases')
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
+              title: Text('Profile')
             ),
           ]),
     );

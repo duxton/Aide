@@ -2,10 +2,12 @@ import 'package:AideApp/Model/email_authentication.dart';
 import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Registration/login_signup_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'AuthScreen.dart';
+import 'Registration/create_account.dart';
 
 // final GoogleSignIn googleSignIn = GoogleSignIn();
 final StorageReference storageRef = FirebaseStorage.instance.ref();
@@ -14,6 +16,8 @@ final tasksRef = Firestore.instance.collection('tasks');
 final subTasksRef = Firestore.instance.collection('sub-tasks');
 final DateTime timestamp = DateTime.now();
 User currentUser;
+
+
 
 enum AuthStatus {
   NOT_DETERMINED,
@@ -51,6 +55,7 @@ class _HomeState extends State<Home> {
         if (user != null) {
           _userId = user?.uid;
           print("Current User: " + _userId);
+          createUserInFirestore();
         }
         authStatus =
             user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
@@ -62,6 +67,34 @@ class _HomeState extends State<Home> {
     // }).catchError((err) {
     //   print(err);
     // });
+  }
+
+    createUserInFirestore() async { 
+    // 1) check if user exist in users collection in database according to their id
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+   //This is where u get current user using googleSignIn
+    DocumentSnapshot doc = await usersRef.document(user.uid).get();
+
+    // 2) if user doesnt exist then take htem to create account page
+    if (!doc.exists) {
+      final username = await Navigator.push(
+          context, MaterialPageRoute(builder: (context) => CreateAccount()));
+
+      // 3) get username from create acccount and use it to make new user document in users collection
+      usersRef.document(user.uid).setData({
+        "id": user.uid,
+        "username": username,
+        "photoUrl": user.photoUrl,
+        "email": user.email,
+        "displayName": user.displayName,
+        "bio": "",
+        "timestamp": timestamp
+      });
+      //make new user their own follower (to include their post in their timeline)
+
+      doc = await usersRef.document(user.uid).get();
+    }
+    currentUser = User.fromDocument(doc);
   }
  
 

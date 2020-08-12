@@ -99,7 +99,7 @@ customTextField(String text, sideIcon, controller) {
                       cacheImage:
                           true, // allow widget to cache image against provided url
                       onTap: () {
-                        print('Duxton');
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditProfile()));
                       }, // sets on tap
                       showInitialTextAbovePicture:
                           true, // setting it true will show initials text above profile picture, default false
