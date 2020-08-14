@@ -1,4 +1,5 @@
 import 'package:AideApp/Model/email_authentication.dart';
+import 'package:AideApp/Screens/Registration/edit_profileDetails.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
@@ -13,12 +14,11 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  // logout() async {
-  //   await googleSignIn.signOut();
-  //   Navigator.pushReplacement(
-  //       context, MaterialPageRoute(builder: (context) => Home()));
-  // }
-
+  _EditProfileState() {
+    _emailFilter.addListener(_emailListen);
+    _passwordFilter.addListener(_passwordListen);
+    _resetPasswordEmailFilter.addListener(_resetPasswordEmailListen);
+  }
   customTextField(String text, controller, labelText) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
@@ -41,10 +41,273 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  TextEditingController nameController = TextEditingController();
-  TextEditingController dateOfBirthController = TextEditingController();
-  TextEditingController phoneNumberController = TextEditingController();
-  TextEditingController jobTitleController = TextEditingController();
+  final TextEditingController _emailFilter = new TextEditingController();
+  final TextEditingController _passwordFilter = new TextEditingController();
+  final TextEditingController _resetPasswordEmailFilter =
+      new TextEditingController();
+  String _email = "";
+  String _password = "";
+  String _resetPasswordEmail = "";
+  bool _isLoading;
+  String _errorMessage;
+  bool _isIos;
+  bool expanded = false;
+  bool emailExpanded = false;
+  bool _isEmailVerified = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _resetPasswordEmailListen() {
+    if (_resetPasswordEmailFilter.text.isEmpty) {
+      _resetPasswordEmail = "";
+    } else {
+      _resetPasswordEmail = _resetPasswordEmailFilter.text;
+    }
+  }
+
+  void _passwordListen() {
+    if (_passwordFilter.text.isEmpty) {
+      _password = "";
+    } else {
+      _password = _passwordFilter.text;
+    }
+  }
+
+  void _emailListen() {
+    if (_emailFilter.text.isEmpty) {
+      _email = "";
+    } else {
+      _email = _emailFilter.text;
+    }
+  }
+
+  _showChangeEmailContainer() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: new BorderRadius.circular(30.0),
+        color: Colors.amberAccent,
+      ),
+      padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
+      child: Column(
+        children: <Widget>[
+          new TextFormField(
+            controller: _emailFilter,
+            decoration: new InputDecoration(
+              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              hintText: "Enter New Email",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(22.0)),
+            ),
+          ),
+          new MaterialButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0)),
+            onPressed: () {
+// widget.auth.changeEmail("abc@gmail.com
+              _changeEmail();
+            },
+            minWidth: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+            color: Colors.blueAccent,
+            textColor: Colors.white,
+            child: Text(
+              "Change Email",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _showEmailChangeErrorMessage() {
+    if (_errorMessage != null) {
+      return new Text(
+        _errorMessage,
+        style: TextStyle(
+            fontSize: 13.0,
+            color: Colors.red,
+            height: 1.0,
+            fontWeight: FontWeight.w300),
+      );
+    } else {
+      return new Container(
+        height: 0.0,
+      );
+    }
+  }
+
+  void _changeEmail() {
+    if (_email != null && _email.isNotEmpty) {
+      try {
+        print("============>" + _email);
+        widget.auth.changeEmail(_email);
+      } catch (e) {
+        print("============>" + e);
+        setState(() {
+          _isLoading = false;
+          if (_isIos) {
+            _errorMessage = e.details;
+          } else
+            _errorMessage = e.message;
+        });
+      }
+    } else {
+      print("email feild empty");
+    }
+  }
+
+  dropdownEmailContainer() {
+    return Column(
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              alignment: Alignment.center,
+              child: ButtonTheme(
+                shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(30.0)),
+                minWidth: MediaQuery.of(context).size.width * 0.8,
+                height: 50,
+                child: RaisedButton.icon(
+                  label: Text(
+                    "Change email",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  color: Colors.grey[200],
+                  onPressed: () => setState(() {
+                    emailExpanded = !emailExpanded;
+                  }),
+                  icon: Icon(Icons.update, color: Colors.black),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: emailExpanded ? 150 : 0,
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: _showChangeEmailContainer(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _sendResetPasswordMail() {
+    if (_resetPasswordEmail != null && _resetPasswordEmail.isNotEmpty) {
+      print("============>" + _resetPasswordEmail);
+      widget.auth.sendPasswordResetMail(_resetPasswordEmail);
+    } else {
+      print("password feild empty");
+    }
+  }
+
+  _showChangePasswordContainer() {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30.0), color: Colors.brown),
+      padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
+      child: Column(
+        children: <Widget>[
+          new TextFormField(
+            controller: _passwordFilter,
+            decoration: new InputDecoration(
+              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              hintText: "Enter New Password",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(22.0)),
+            ),
+          ),
+          new MaterialButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0)),
+            onPressed: () {
+              _changePassword();
+            },
+            minWidth: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+            color: Colors.blueAccent,
+            textColor: Colors.white,
+            child: Text(
+              "Change Password",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _changePassword() {
+    if (_password != null && _password.isNotEmpty) {
+      print("============>" + _password);
+      widget.auth.changePassword(_password);
+    } else {
+      print("password feild empty");
+    }
+  }
+
+  dropdownPasswordContainer() {
+    return Column(
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              alignment: Alignment.center,
+              child: ButtonTheme(
+                shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(30.0)),
+                minWidth: MediaQuery.of(context).size.width * 0.8,
+                height: 50,
+                child: RaisedButton.icon(
+                  label: Text(
+                    "Change password",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  color: Colors.grey[200],
+                  onPressed: () => setState(() {
+                    expanded = !expanded;
+                  }),
+                  icon: Icon(Icons.update, color: Colors.black),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: expanded ? 150 : 0,
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: _showChangePasswordContainer(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,26 +328,8 @@ class _EditProfileState extends State<EditProfile> {
           CircleAvatar(
             radius: 75,
           ),
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    customTextField("Name", nameController, 'Name'),
-                    customTextField("Date of birth", dateOfBirthController,
-                        'Date Of Birth'),
-                    customTextField(
-                        "Phone number", phoneNumberController, 'Phone number'),
-                    customTextField(
-                        "Job Title", jobTitleController, 'Job Title'),
-                  ],
-                ),
-              ),
-            ),
+          SizedBox(
+            height: 25,
           ),
           Container(
             alignment: Alignment.center,
@@ -95,15 +340,28 @@ class _EditProfileState extends State<EditProfile> {
               height: 50,
               child: RaisedButton.icon(
                 label: Text(
-                  "Update Profile",
+                  "Change profile details",
                   style: TextStyle(color: Colors.black),
                 ),
                 color: Colors.grey[200],
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditProfileDetails()));
+                },
                 icon: Icon(Icons.update, color: Colors.black),
               ),
             ),
           ),
+          SizedBox(
+            height: 25,
+          ),
+          dropdownEmailContainer(),
+          SizedBox(
+            height: 25,
+          ),
+          dropdownPasswordContainer(),
         ],
       ),
     );
