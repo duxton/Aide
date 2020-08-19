@@ -80,9 +80,9 @@ class Auth implements BaseAuth {
     return null;
   }
 
-  @override
-  Future<void> sendPasswordResetMail(String email) async {
+ @override
+Future<void> sendPasswordResetMail(String email) async {
     await _firebaseAuth.sendPasswordResetEmail(email: email);
     return null;
-  }
+}
 }

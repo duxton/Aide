@@ -32,15 +32,6 @@ class _AuthScreenState extends State<AuthScreen> {
   int pageIndex = 0; //TODO:: Figure out how to set default tab as pageIndex = 1 
   PageController pageController;
 
-  _signOut() async {
-    try {
-      await widget.auth.signOut();
-      widget.onSignedOut();
-    } catch (e) {
-      print(e);
-    }
-  }
-
   onTap(int pageIndex) {
     pageController.animateToPage(
       pageIndex,
@@ -64,27 +55,12 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: new Text(
-          'Aide',
-          style: TextStyle(color: Colors.black),
-        ),
-        actions: <Widget>[
-          new IconButton(
-            color: Colors.black,
-            icon: Icon(Icons.exit_to_app),
-            onPressed: _signOut,
-          ),
-        ],
-      ),
       key: _scaffoldKey,
       body: PageView(
         children: <Widget>[
           AllProduct(),
           InAppPurchase(),
-          ViewProfile(),
+          ViewProfile(auth: widget.auth, onSignedOut: widget.onSignedOut,),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,

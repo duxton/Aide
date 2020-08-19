@@ -1,5 +1,6 @@
 import 'package:AideApp/Model/email_authentication.dart';
 import 'package:AideApp/Screens/Registration/edit_profileDetails.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
@@ -16,7 +17,7 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
   _EditProfileState() {
     _emailFilter.addListener(_emailListen);
-    _passwordFilter.addListener(_passwordListen);
+    // _passwordFilter.addListener(_passwordListen);
     _resetPasswordEmailFilter.addListener(_resetPasswordEmailListen);
   }
   customTextField(String text, controller, labelText) {
@@ -42,11 +43,10 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   final TextEditingController _emailFilter = new TextEditingController();
-  final TextEditingController _passwordFilter = new TextEditingController();
   final TextEditingController _resetPasswordEmailFilter =
       new TextEditingController();
+
   String _email = "";
-  String _password = "";
   String _resetPasswordEmail = "";
   bool _isLoading;
   String _errorMessage;
@@ -58,6 +58,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
   }
 
   void _resetPasswordEmailListen() {
@@ -68,13 +69,13 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  void _passwordListen() {
-    if (_passwordFilter.text.isEmpty) {
-      _password = "";
-    } else {
-      _password = _passwordFilter.text;
-    }
-  }
+  // void _passwordListen() {
+  //   if (_passwordFilter.text.isEmpty) {
+  //     _password = "";
+  //   } else {
+  //     _password = _passwordFilter.text;
+  //   }
+  // }
 
   void _emailListen() {
     if (_emailFilter.text.isEmpty) {
@@ -123,24 +124,8 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  Widget _showEmailChangeErrorMessage() {
-    if (_errorMessage != null) {
-      return new Text(
-        _errorMessage,
-        style: TextStyle(
-            fontSize: 13.0,
-            color: Colors.red,
-            height: 1.0,
-            fontWeight: FontWeight.w300),
-      );
-    } else {
-      return new Container(
-        height: 0.0,
-      );
-    }
-  }
 
-  void _changeEmail() {
+  void _changeEmail() { // TODO:: Verify thats its the same as the current user only allow changes
     if (_email != null && _email.isNotEmpty) {
       try {
         print("============>" + _email);
@@ -206,59 +191,56 @@ class _EditProfileState extends State<EditProfile> {
       ],
     );
   }
+FirebaseUser currentUser;
+
+ void _loadCurrentUser() {
+   FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
+     setState(() {
+       currentUser = user;
+     });
+   });
+ }
 
   void _sendResetPasswordMail() {
-    if (_resetPasswordEmail != null && _resetPasswordEmail.isNotEmpty) {
+    if (_resetPasswordEmail != null && _resetPasswordEmail.isNotEmpty && _resetPasswordEmail == currentUser.email) {
       print("============>" + _resetPasswordEmail);
       widget.auth.sendPasswordResetMail(_resetPasswordEmail);
     } else {
-      print("password feild empty");
+      print("password field empty");
     }
   }
 
-  _showChangePasswordContainer() {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30.0), color: Colors.brown),
-      padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-      child: Column(
-        children: <Widget>[
-          new TextFormField(
-            controller: _passwordFilter,
+  _showSentResetPasswordEmailContainer() {
+    return Column(
+      children: <Widget>[
+        new Container(
+          child: new TextFormField(
+            controller: _resetPasswordEmailFilter,
             decoration: new InputDecoration(
               contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-              hintText: "Enter New Password",
+              hintText: "Enter Email",
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(22.0)),
             ),
           ),
-          new MaterialButton(
-            shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0)),
-            onPressed: () {
-              _changePassword();
-            },
-            minWidth: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            child: Text(
-              "Change Password",
-              textAlign: TextAlign.center,
-            ),
+        ),
+        new MaterialButton(
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(30.0)),
+          onPressed: () {
+            _sendResetPasswordMail();
+          },
+          minWidth: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          color: Colors.blueAccent,
+          textColor: Colors.white,
+          child: Text(
+            "Send Password Reset Mail",
+            textAlign: TextAlign.center,
           ),
-        ],
-      ),
+        ),
+      ],
     );
-  }
-
-  void _changePassword() {
-    if (_password != null && _password.isNotEmpty) {
-      print("============>" + _password);
-      widget.auth.changePassword(_password);
-    } else {
-      print("password feild empty");
-    }
   }
 
   dropdownPasswordContainer() {
@@ -299,7 +281,7 @@ class _EditProfileState extends State<EditProfile> {
             children: <Widget>[
               Expanded(
                 flex: 1,
-                child: _showChangePasswordContainer(),
+                child: _showSentResetPasswordEmailContainer(),
               ),
             ],
           ),

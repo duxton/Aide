@@ -1,4 +1,5 @@
 import 'package:AideApp/Screens/InAppPayment/ProductDetails.dart';
+import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
 
 class InAppPurchase extends StatefulWidget {
@@ -77,15 +78,15 @@ class _InAppPurchaseState extends State<InAppPurchase> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: header(context,
-        //     titleText: 'Shopping',
-        //     backgroundColor: Colors.white,
-        //      removeBackButton: true,
-        //     icons: IconButton(
-        //       icon: Icon(Icons.shopping_cart),
-        //       color: Colors.black,
-        //       onPressed: () {},
-        //     )),
+        appBar: header(context,
+            titleText: 'Shopping',
+            backgroundColor: Colors.white,
+             removeBackButton: true,
+            icons: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              color: Colors.black,
+              onPressed: () {},
+            )),
         body: GridView.count(
           primary: false,
           padding: const EdgeInsets.all(20),

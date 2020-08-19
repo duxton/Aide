@@ -17,8 +17,6 @@ final subTasksRef = Firestore.instance.collection('sub-tasks');
 final DateTime timestamp = DateTime.now();
 User currentUser;
 
-
-
 enum AuthStatus {
   NOT_DETERMINED,
   NOT_LOGGED_IN,
@@ -55,6 +53,8 @@ class _HomeState extends State<Home> {
         if (user != null) {
           _userId = user?.uid;
           print("Current User: " + _userId);
+          print("Current User: " + user.email);
+  
           createUserInFirestore();
         }
         authStatus =
