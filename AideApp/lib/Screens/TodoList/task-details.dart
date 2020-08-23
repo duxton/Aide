@@ -14,6 +14,7 @@ class TaskDetails extends StatefulWidget {
   final String description;
   final String color;
   final String name;
+  final bool isCompleted;
   final Timestamp date;
   final Timestamp time;
   final String subTaskCreatedId;
@@ -25,6 +26,7 @@ class TaskDetails extends StatefulWidget {
     this.description,
     this.color,
     this.name,
+    this.isCompleted,
     this.date,
     this.time,
     this.subTaskCreatedId,
@@ -38,6 +40,7 @@ class TaskDetails extends StatefulWidget {
       description: doc['description'],
       color: doc['colour'],
       name: doc['name'],
+      isCompleted: doc['isCompleted'],
       date: doc['date'],
       time: doc['time'],
       location: doc['location'],
@@ -51,6 +54,7 @@ class TaskDetails extends StatefulWidget {
         description: this.description,
         color: this.color,
         name: this.name,
+        isCompleted: this.isCompleted,
         date: this.date,
         time: this.time,
         location: this.location,
@@ -67,6 +71,7 @@ class _TaskDetailsState extends State<TaskDetails>
   final String description;
   final String color;
   final String name;
+  bool isCompleted;
   final String location;
   final Timestamp date;
   final Timestamp time;
@@ -79,6 +84,7 @@ class _TaskDetailsState extends State<TaskDetails>
     this.color,
     this.location,
     this.name,
+    this.isCompleted,
     this.date,
     this.time,
     this.subTaskName,
@@ -101,6 +107,7 @@ class _TaskDetailsState extends State<TaskDetails>
   String subTaskId = Uuid().v4();
   bool isSwitched = false;
   bool _isEditingText = false;
+
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -157,8 +164,9 @@ class _TaskDetailsState extends State<TaskDetails>
     );
   }
 
-  Color pickerColor = Color.fromRGBO(126,25,27,0.5);// Change color "new color"
-  Color currentColor = Color.fromRGBO(126,25,27,0.5);
+  Color pickerColor =
+      Color.fromRGBO(126, 25, 27, 0.5); // Change color "new color"
+  Color currentColor = Color.fromRGBO(126, 25, 27, 0.5);
 // ValueChanged<Color> callback
   void changeColor(Color color) {
     setState(() => pickerColor = color);
@@ -202,6 +210,7 @@ class _TaskDetailsState extends State<TaskDetails>
     updateTaskData(
       color: color,
       description: descriptionController.text,
+      isCompleted: isCompleted,
     );
     colourController.clear();
     setState(() {
@@ -213,6 +222,7 @@ class _TaskDetailsState extends State<TaskDetails>
   updateTaskData({
     String color,
     String description,
+    bool isCompleted,
   }) {
     tasksRef
         .document(currentUser.id)
@@ -221,6 +231,7 @@ class _TaskDetailsState extends State<TaskDetails>
         .updateData({
       "colour": color,
       "description": description,
+      "isCompleted" : isCompleted,
     });
   }
 
@@ -363,6 +374,27 @@ class _TaskDetailsState extends State<TaskDetails>
                   ),
                 ),
               ],
+            ),
+            Expanded(
+              child: Container(
+                child:
+                //  StreamBuilder(
+                //     stream: tasksRef
+                //         .document(currentUserId)
+                //         .collection('userTasks')
+                //         .snapshots(),
+                //     builder: (context, snapshot) {
+                //       return 
+                      CheckboxListTile(
+                        value: isCompleted,
+                        onChanged: (bool value) {
+                          setState(() {
+                            isCompleted = value;
+                          });
+                        },
+                    
+                    ),
+              ),
             ),
           ],
         ),
@@ -576,8 +608,7 @@ class _TaskDetailsState extends State<TaskDetails>
             onPressed: isUploading ? null : () => handleUpdateSubmit(),
           )),
       body: Container(
-        decoration: BoxDecoration(
-            color: Colors.grey[200]),
+        decoration: BoxDecoration(color: Colors.grey[200]),
         child: buildTaskDetails(),
       ),
     );

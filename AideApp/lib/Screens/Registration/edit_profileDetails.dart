@@ -1,10 +1,13 @@
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
 
-class EditProfileDetails extends StatelessWidget {
+class EditProfileDetails extends StatefulWidget {
+  @override
+  _EditProfileDetailsState createState() => _EditProfileDetailsState();
+}
 
-
-    customTextField(String text, controller, labelText) {
+class _EditProfileDetailsState extends State<EditProfileDetails> {
+  customTextField(String text, controller, labelText) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: ListTile(
@@ -26,9 +29,12 @@ class EditProfileDetails extends StatelessWidget {
     );
   }
 
-   TextEditingController nameController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+
   TextEditingController dateOfBirthController = TextEditingController();
+
   TextEditingController phoneNumberController = TextEditingController();
+
   TextEditingController jobTitleController = TextEditingController();
 
   @override
@@ -36,7 +42,7 @@ class EditProfileDetails extends StatelessWidget {
     return Scaffold(
       appBar: header(context, titleText: 'Change profiles details'),
       body: Column(
-         mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(
             height: 25,
@@ -58,8 +64,8 @@ class EditProfileDetails extends StatelessWidget {
                         'Date Of Birth'),
                     customTextField(
                         "Phone number", phoneNumberController, 'Phone number'),
-                        customTextField(
-                        "Job title", jobTitleController,  "Job title"),
+                    customTextField(
+                        "Job title", jobTitleController, "Job title"),
                   ],
                 ),
               ),

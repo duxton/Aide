@@ -38,6 +38,7 @@ class _ViewTaskState extends State<ViewTask> {
 
   int totalTask = 0;
   int totalColourTask = 0;
+  int totalCompletedTask = 0;
   bool isWaiting = true;
 
   @override
@@ -45,6 +46,7 @@ class _ViewTaskState extends State<ViewTask> {
     super.initState();
     checkIfCompletedOrNot();
     getTotalTask();
+    getCompletedTask();
   }
 
   getTotalTask() async {
@@ -56,6 +58,20 @@ class _ViewTaskState extends State<ViewTask> {
     setState(() {
       isWaiting = false;
       totalTask = snapshot.documents.length;
+    });
+  }
+
+  getCompletedTask() async {
+    QuerySnapshot snapshot = await tasksRef
+        .document(currentUser.id)
+        .collection('userTasks')
+        .where('isCompleted', isEqualTo: true)
+        .getDocuments();
+    
+
+    setState(() {
+      isWaiting = false;
+      totalCompletedTask = snapshot.documents.length;
     });
   }
 
@@ -151,12 +167,13 @@ class _ViewTaskState extends State<ViewTask> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 taskNo(isWaiting ? '??' : totalTask.toString(), 'Total'),
-                taskNo(isWaiting ? '??' : totalTask.toString(), 'Work'),
+
                 taskNo(totalColourTask.toString(),
                     'Personal'), // TODO:: Total Task by different colour Caculation  TDY
                 //* *  Think of it more before deciding what to put here
               ],
             ),
+            taskNo(isWaiting ? '??' : totalCompletedTask.toString(), 'Completed'),
             Text(
               'Progress 65% done ', // TODO:: Total Task completion Caculation Maybe change to circularProgress
               style: TextStyle(color: Colors.white, fontSize: 10),

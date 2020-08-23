@@ -53,7 +53,7 @@ class _HomeState extends State<Home> {
         if (user != null) {
           _userId = user?.uid;
           print("Current User: " + _userId);
-          print("Current User: " + user.email);
+          print("Current email: " + user.email);
   
           createUserInFirestore();
         }
