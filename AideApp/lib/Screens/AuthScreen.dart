@@ -29,7 +29,7 @@ class _AuthScreenState extends State<AuthScreen> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   bool isAuth = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  int pageIndex = 0; //TODO:: Figure out how to set default tab as pageIndex = 1 
+  int pageIndex = 0;
   PageController pageController;
 
   onTap(int pageIndex) {

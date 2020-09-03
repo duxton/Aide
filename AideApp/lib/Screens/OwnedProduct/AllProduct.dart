@@ -105,9 +105,8 @@ class _AllProductState extends State<AllProduct> {
           customProduct(context, 'Financial', '/Financial_Assistance'),
           customProduct(context, 'Todo Task', '/View_Task'),
           customProduct(context, 'Calendar', '/Calender'),
-          customProduct(context, 'Gym assistance', '/View_Task'),
-          customProduct(context, 'Themes', '/View_Task'),
-          customProduct(context, 'Gym assistance', '/View_Task'),
+          customProduct(context, 'Test Functions', '/Calender'),
+  
         ],
       ),
     );

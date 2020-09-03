@@ -67,7 +67,6 @@ class _ViewTaskState extends State<ViewTask> {
         .collection('userTasks')
         .where('isCompleted', isEqualTo: true)
         .getDocuments();
-    
 
     setState(() {
       isWaiting = false;
@@ -167,16 +166,19 @@ class _ViewTaskState extends State<ViewTask> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 taskNo(isWaiting ? '??' : totalTask.toString(), 'Total'),
-
-                taskNo(totalColourTask.toString(),
-                    'Personal'), // TODO:: Total Task by different colour Caculation  TDY
-                //* *  Think of it more before deciding what to put here
+                taskNo(isWaiting ? '??' : totalCompletedTask.toString(),
+                    'Completed'),
               ],
             ),
-            taskNo(isWaiting ? '??' : totalCompletedTask.toString(), 'Completed'),
-            Text(
-              'Progress 65% done ', // TODO:: Total Task completion Caculation Maybe change to circularProgress
-              style: TextStyle(color: Colors.white, fontSize: 10),
+             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                taskNo(isWaiting ? '??' : totalTask.toString(), 'Work'),
+                // TODO:: Figure out a way to seperate task by work and personal categories
+                taskNo(isWaiting ? '??' : totalCompletedTask.toString(),
+                    'Personal'),
+              ],
             ),
           ],
         ),
@@ -200,15 +202,14 @@ class _ViewTaskState extends State<ViewTask> {
             .document(currentUserId)
             .collection('userTasks')
             .orderBy("date", descending: false)
-            //  .where("isCompleted", isEqualTo: false)
+            .where('isCompleted', isEqualTo: false)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return circularProgress();
           }
           List<Tasks> tasks = [];
-          //  var isEmpty = tasks.isEmpty;// TODO:: Check if all tasks isCompleted to true; TDY
-          //* Use index on firestore
+
           snapshot.data.documents.forEach((doc) {
             tasks.add(Tasks.fromDocument(doc));
           });

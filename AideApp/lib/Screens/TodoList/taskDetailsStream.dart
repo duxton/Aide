@@ -27,3 +27,26 @@ class DetailsScreen extends StatelessWidget {
   }
 }
 
+class NotifyMe extends StatelessWidget {
+  final bool notifyMe;
+  final String tasksId;
+  NotifyMe({this.notifyMe,this.tasksId});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+        stream: notifyMeRef
+            .document(currentUser.id)
+            .collection(tasksId)
+            .document('Notify Me reminder')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return circularProgress();
+          }
+          TaskDetails taskDetails = TaskDetails.fromDocument(snapshot.data);
+          return taskDetails;
+        });
+  }
+}
+

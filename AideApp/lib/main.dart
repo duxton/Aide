@@ -10,31 +10,24 @@ import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/FinancialAdvisor.d
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
+import 'Model/notification_helper.dart';
 import 'Screens/Alarm/enums.dart';
 import 'Screens/Alarm/model/menuInfo.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+  NotificationAppLaunchDetails notificationAppLaunchDetails;
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  var initializationSettingsAndroid =
-      AndroidInitializationSettings('codex_logo');
-  var initializationSettingsIOS = IOSInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-      onDidReceiveLocalNotification:
-          (int id, String title, String body, String payload) async {});
-  var initializationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onSelectNotification: (String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: ' + payload);
-    }
-  });
+  notificationAppLaunchDetails =
+      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  await initNotifications(flutterLocalNotificationsPlugin);
+  requestIOSPermissions(flutterLocalNotificationsPlugin);
+  
   runApp(MyApp());
 }
 

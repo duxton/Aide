@@ -1,3 +1,4 @@
+import 'package:AideApp/Model/notification_helper.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:AideApp/Widgets/Re-usable/progress.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -7,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import 'package:flutter/material.dart';
 
+import '../../main.dart';
 import '../Home.dart';
 
 class TaskDetails extends StatefulWidget {
@@ -20,6 +22,7 @@ class TaskDetails extends StatefulWidget {
   final String subTaskCreatedId;
   final String subTaskName;
   final String location;
+  final bool notifyMe;
 
   TaskDetails({
     this.tasksId,
@@ -32,6 +35,7 @@ class TaskDetails extends StatefulWidget {
     this.subTaskCreatedId,
     this.subTaskName,
     this.location,
+    this.notifyMe,
   });
 
   factory TaskDetails.fromDocument(DocumentSnapshot doc) {
@@ -46,6 +50,7 @@ class TaskDetails extends StatefulWidget {
       location: doc['location'],
       subTaskName: doc['subTaskName'],
       subTaskCreatedId: doc['subTaskId'],
+      notifyMe: doc['notifyMe'],
     );
   }
   @override
@@ -60,6 +65,7 @@ class TaskDetails extends StatefulWidget {
         location: this.location,
         subTaskName: this.subTaskName,
         subTaskCreatedId: this.subTaskCreatedId,
+        notifyMe: this.notifyMe,
       );
 }
 
@@ -77,6 +83,7 @@ class _TaskDetailsState extends State<TaskDetails>
   final Timestamp time;
   final String subTaskName;
   final String subTaskCreatedId;
+  bool notifyMe;
   _TaskDetailsState({
     this.ownerId,
     this.tasksId,
@@ -89,6 +96,7 @@ class _TaskDetailsState extends State<TaskDetails>
     this.time,
     this.subTaskName,
     this.subTaskCreatedId,
+    this.notifyMe,
   });
   TabController _tabController;
 
@@ -108,7 +116,6 @@ class _TaskDetailsState extends State<TaskDetails>
   bool isSwitched = false;
   bool _isEditingText = false;
 
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -123,7 +130,6 @@ class _TaskDetailsState extends State<TaskDetails>
   customTextField(String text, sideIcon, controller, keyboardType) {
     if (_isEditingText) {
       return ListTile(
-        // ListTile for input where was the photo was taken
         leading: sideIcon,
         title: Container(
           height: 50,
@@ -231,7 +237,7 @@ class _TaskDetailsState extends State<TaskDetails>
         .updateData({
       "colour": color,
       "description": description,
-      "isCompleted" : isCompleted,
+      "isCompleted": isCompleted,
     });
   }
 
@@ -378,22 +384,21 @@ class _TaskDetailsState extends State<TaskDetails>
             Expanded(
               child: Container(
                 child:
-                //  StreamBuilder(
-                //     stream: tasksRef
-                //         .document(currentUserId)
-                //         .collection('userTasks')
-                //         .snapshots(),
-                //     builder: (context, snapshot) {
-                //       return 
-                      CheckboxListTile(
-                        value: isCompleted,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isCompleted = value;
-                          });
-                        },
-                    
-                    ),
+                    //  StreamBuilder(
+                    //     stream: tasksRef
+                    //         .document(currentUserId)
+                    //         .collection('userTasks')
+                    //         .snapshots(),
+                    //     builder: (context, snapshot) {
+                    //       return
+                    CheckboxListTile(
+                  value: isCompleted,
+                  onChanged: (bool value) {
+                    setState(() {
+                      isCompleted = value;
+                    });
+                  },
+                ),
               ),
             ),
           ],
@@ -579,21 +584,81 @@ class _TaskDetailsState extends State<TaskDetails>
     );
   }
 
+  handleSubmitNotifyMe() {
+    setState(() {
+      isUploading = true;
+    });
+    createNotifyMeData(
+      notifyMe: notified,
+    );
+    subtaskController.clear();
+    setState(() {
+      isUploading = false;
+      subTaskId = Uuid().v4();
+    });
+  }
+
+  createNotifyMeData({
+    bool notifyMe,
+  }) {
+    notifyMeRef
+        .document(currentUser.id)
+        .collection(tasksId)
+        .document('Notify Me reminder')
+        .setData({
+      "notifyMe": notifyMe,
+      "tasksId": tasksId,
+      "ownerId": currentUser.id,
+      "username": currentUser.username,
+      "timestamp": timestamp,
+    });
+  }
+
+  deleteNotifyMeDocument() {
+    tasksRef
+        .document(currentUser.id)
+        .collection(tasksId)
+        .document('Notify Me reminder')
+        .get()
+        .then((value) => {
+              if (value.exists)
+                {
+                  value.reference.delete(),
+                }
+            });
+  }
+
+
+
   toggleButtonReminder() {
+    // TODO:: Figure out to stream the value from firestore
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
-      child: SwitchListTile(
-        title: Text(
-            'Notify Me'), // TODO:: Implement function if user pressed it, it will remind user 30 minutes before the time
-        value: isSwitched,
+      child: SwitchListTile.adaptive(
+        title: Text('Notify Me'),
+        value: isSwitched ? true : false,
         onChanged: (bool value) {
           setState(() {
             isSwitched = value;
           });
+          configureNotifyMe(value);
         },
         secondary: const Icon(Icons.lightbulb_outline),
       ),
     );
+  }
+
+  void configureNotifyMe(bool value) {
+    DateTime notifyMeTime = time.toDate().subtract(Duration(minutes: 30));
+    // DateTime notifyMeTime = DateTime.now().add(Duration(seconds: 5));
+    if (value) {
+      handleSubmitNotifyMe();
+      scheduleNotification(
+          flutterLocalNotificationsPlugin, '1', name, notifyMeTime);
+    } else {
+      deleteNotifyMeDocument();
+      turnOffNotificationById(flutterLocalNotificationsPlugin, 1);
+    }
   }
 
   @override
