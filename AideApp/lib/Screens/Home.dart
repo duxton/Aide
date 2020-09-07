@@ -1,4 +1,5 @@
 import 'package:AideApp/Model/email_authentication.dart';
+import 'package:AideApp/Model/tasks.dart';
 import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Registration/login_signup_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,8 +16,10 @@ final usersRef = Firestore.instance.collection('users');
 final tasksRef = Firestore.instance.collection('tasks');
 final subTasksRef = Firestore.instance.collection('sub-tasks');
 final notifyMeRef = Firestore.instance.collection('notify-me');
+final notificationTaskRef = Firestore.instance.collection('Notification-tasks');
 final DateTime timestamp = DateTime.now();
 User currentUser;
+Task tasksInfo;
 
 enum AuthStatus {
   NOT_DETERMINED,

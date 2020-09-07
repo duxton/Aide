@@ -257,7 +257,7 @@ class Tasks extends StatelessWidget {
   final String name;
   final String location;
   final Timestamp timestamp;
-  final Timestamp date;
+  final Timestamp time;
   final String tasksId;
   final String color;
 
@@ -266,7 +266,7 @@ class Tasks extends StatelessWidget {
       this.location,
       this.timestamp,
       this.tasksId,
-      this.date,
+      this.time,
       this.color,
       this.taskDetails});
 
@@ -276,7 +276,7 @@ class Tasks extends StatelessWidget {
       location: doc['location'],
       timestamp: doc['timestamp'],
       tasksId: doc['tasksId'],
-      date: doc['date'],
+      time: doc['time'],
       color: doc['colour'],
     );
   }
@@ -350,7 +350,7 @@ class Tasks extends StatelessWidget {
     String valueString = color.split('(0x')[1].split(')')[0]; // kind of hacky..
     int value = int.parse(valueString, radix: 16);
     Color otherColor = new Color(value);
-    DateTime dateTime = date.toDate();
+    DateTime dateTime = time.toDate();
     String formatDateTime = DateFormat('MMM-dd').format(dateTime);
     return Slidable(
       actionPane: SlidableDrawerActionPane(),

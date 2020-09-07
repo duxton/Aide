@@ -1,17 +1,27 @@
+import 'package:AideApp/Model/notification_helper.dart';
+import 'package:AideApp/Model/tasks.dart';
 import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Home.dart';
+
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:AideApp/Widgets/Re-usable/progress.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../main.dart';
+
 class EditTask extends StatefulWidget {
   final User currentUser;
+  final Task tasksInfo;
 
-  EditTask({this.currentUser});
+  EditTask({
+    this.currentUser,
+    this.tasksInfo,
+  });
 
   @override
   _EditTaskState createState() => _EditTaskState();
@@ -27,13 +37,11 @@ class _EditTaskState extends State<EditTask> {
   bool isUploading = false;
   DateTime dateTime;
   DateTime newDateTime;
-  TimeOfDay newTime;
+  DateTime newTime;
   String tasksId = Uuid().v4();
   bool expanded = false;
-
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
-
   Color backgroundColorPicker = Color(0xffF5F5DC);
 
 // ValueChanged<Color> callback
@@ -47,7 +55,7 @@ class _EditTaskState extends State<EditTask> {
     super.initState();
   }
 
-  customTextField(String text, sideIcon, controller) {
+  customTextField(String text, sideIcon, controller, maxLength) {
     return ListTile(
       // ListTile for input where was the photo was taken
       leading: sideIcon,
@@ -55,8 +63,10 @@ class _EditTaskState extends State<EditTask> {
         width: 250.0,
         child: TextField(
           style: TextStyle(color: Colors.black),
+          maxLength: maxLength,
           controller: controller,
           decoration: InputDecoration(
+            counterText: "",
             hintText: text,
             border: InputBorder.none,
             hintStyle: TextStyle(color: Colors.black),
@@ -66,10 +76,54 @@ class _EditTaskState extends State<EditTask> {
     );
   }
 
-  handlesSubmit() async {
+  void configureNotificationTask(bool value) {
+    DateTime notificationTask = dateTime;
+    // DateTime notifyMeTime = DateTime.now().add(Duration(seconds: 5));
+    if (value) {
+      handleSubmitNotificationTask();
+      scheduleNotification(flutterLocalNotificationsPlugin, '1', nameController.text,
+          notificationTask);
+    } else {
+      //  deleteNotifyMeDocument();
+      turnOffNotificationById(flutterLocalNotificationsPlugin, 1);
+    }
+  }
+
+  handleSubmitNotificationTask() {
     setState(() {
       isUploading = true;
     });
+    createNotifyMeData(
+      notificationTask: isUploading,
+    );
+
+    setState(() {
+      isUploading = false;
+    });
+  }
+
+  createNotifyMeData({
+    bool notificationTask,
+  }) {
+    notificationTaskRef
+        .document(currentUser.id)
+        .collection(tasksId)
+        .document('Notification tasks')
+        .setData({
+      "notifyMe": notificationTask,
+      "tasksId": tasksId,
+      "ownerId": currentUser.id,
+      "username": currentUser.username,
+      "timestamp": timestamp,
+    });
+  }
+
+  handlesSubmit() async {
+    setState(() {
+      isUploading = true;
+      configureNotificationTask(isUploading);
+    });
+
     DateTime date = await datePicker();
     String time = await timePicker();
     String color = await colorPicker();
@@ -130,7 +184,7 @@ class _EditTaskState extends State<EditTask> {
     DateTime newDateTime = await showRoundedDatePicker(
       context: context,
       initialDatePickerMode: DatePickerMode.day,
-      theme: ThemeData(primaryColor:backgroundColorPicker ),
+      theme: ThemeData(primaryColor: backgroundColorPicker),
     );
     if (newDateTime != null) {
       setState(() => this.newDateTime = newDateTime);
@@ -286,7 +340,7 @@ class _EditTaskState extends State<EditTask> {
                     size: 50,
                     color: Colors.white,
                   ),
-                  backgroundColor:Colors.grey[350],
+                  backgroundColor: Colors.grey[350],
                 ))),
         SizedBox(
           height: 30,
@@ -300,24 +354,27 @@ class _EditTaskState extends State<EditTask> {
                   color: Colors.brown[200],
                   size: 35,
                 ),
-                nameController),
+                nameController,
+                20),
             customTextField(
               "Description",
               Icon(
                 Icons.description,
-                 color: Colors.brown[200],
+                color: Colors.brown[200],
                 size: 35,
               ),
               descriptionController,
+              null,
             ),
             customTextField(
               "Location",
               Icon(
                 Icons.location_on,
-                 color: Colors.brown[200],
+                color: Colors.brown[200],
                 size: 35,
               ),
               locationController,
+              null,
             ),
             SizedBox(
               height: 20,
@@ -386,8 +443,7 @@ class _EditTaskState extends State<EditTask> {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Container(
-        decoration: BoxDecoration(
-           color: Colors.white),
+        decoration: BoxDecoration(color: Colors.white),
         child: Column(
           children: <Widget>[
             isUploading ? linearProgress() : Text(""),

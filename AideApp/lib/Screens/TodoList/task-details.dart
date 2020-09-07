@@ -17,7 +17,7 @@ class TaskDetails extends StatefulWidget {
   final String color;
   final String name;
   final bool isCompleted;
-  final Timestamp date;
+
   final Timestamp time;
   final String subTaskCreatedId;
   final String subTaskName;
@@ -30,7 +30,6 @@ class TaskDetails extends StatefulWidget {
     this.color,
     this.name,
     this.isCompleted,
-    this.date,
     this.time,
     this.subTaskCreatedId,
     this.subTaskName,
@@ -45,7 +44,6 @@ class TaskDetails extends StatefulWidget {
       color: doc['colour'],
       name: doc['name'],
       isCompleted: doc['isCompleted'],
-      date: doc['date'],
       time: doc['time'],
       location: doc['location'],
       subTaskName: doc['subTaskName'],
@@ -60,7 +58,6 @@ class TaskDetails extends StatefulWidget {
         color: this.color,
         name: this.name,
         isCompleted: this.isCompleted,
-        date: this.date,
         time: this.time,
         location: this.location,
         subTaskName: this.subTaskName,
@@ -346,12 +343,12 @@ class _TaskDetailsState extends State<TaskDetails>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    DateFormat.MMM().format(date.toDate()),
+                    DateFormat.MMM().format(time.toDate()),
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Theme.of(context).primaryColor),
                   ),
                   Text(
-                    DateFormat.d().format(date.toDate()),
+                    DateFormat.d().format(time.toDate()),
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Theme.of(context).primaryColor),
                   ),
@@ -589,12 +586,10 @@ class _TaskDetailsState extends State<TaskDetails>
       isUploading = true;
     });
     createNotifyMeData(
-      notifyMe: notified,
+      notifyMe: isSwitched,
     );
-    subtaskController.clear();
     setState(() {
       isUploading = false;
-      subTaskId = Uuid().v4();
     });
   }
 
@@ -627,8 +622,6 @@ class _TaskDetailsState extends State<TaskDetails>
                 }
             });
   }
-
-
 
   toggleButtonReminder() {
     // TODO:: Figure out to stream the value from firestore
