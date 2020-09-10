@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:AideApp/Model/notification_helper.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:AideApp/Widgets/Re-usable/progress.dart';
@@ -320,6 +322,52 @@ class _TaskDetailsState extends State<TaskDetails>
     );
   }
 
+  handleSubmitCompleteTask() async {
+    setState(() {
+      isUploading = true;
+    });
+    updateIsCompletedTask(
+      isCompleted: isCompleted,
+    );
+    setState(() {
+      isUploading = false;
+      // Navigator.pop(context);
+    });
+  }
+
+  updateIsCompletedTask({
+    bool isCompleted,
+  }) {
+    tasksRef
+        .document(currentUser.id)
+        .collection("userTasks")
+        .document(tasksId)
+        .updateData({
+      "isCompleted": isCompleted,
+    });
+  }
+
+  Future<dynamic> checkIsCompletedStatus() async {
+    DocumentSnapshot snapshot = await tasksRef
+        .document(currentUser.id)
+        .collection('userTasks')
+        .document(tasksId)
+        .get();
+    return snapshot.data['isCompleted'];
+  }
+
+  changeItToFalse() {
+    handleSubmitCompleteTask();
+  }
+
+  void configureIsCompleted(bool value) {
+    if (value) {
+      handleSubmitCompleteTask();
+    } else {
+      changeItToFalse();
+    }
+  }
+
   buildTaskHeader() {
     return Padding(
       padding: const EdgeInsets.all(15.0),
@@ -380,20 +428,18 @@ class _TaskDetailsState extends State<TaskDetails>
             ),
             Expanded(
               child: Container(
-                child:
-                    //  StreamBuilder(
-                    //     stream: tasksRef
-                    //         .document(currentUserId)
-                    //         .collection('userTasks')
-                    //         .snapshots(),
-                    //     builder: (context, snapshot) {
-                    //       return
-                    CheckboxListTile(
-                  value: isCompleted,
-                  onChanged: (bool value) {
-                    setState(() {
-                      isCompleted = value;
-                    });
+                child: FutureBuilder(
+                  future: checkIsCompletedStatus(),
+                  builder: (context, snapshot) {
+                    return CheckboxListTile(
+                      value: isCompleted,
+                      onChanged: (bool value) {
+                        setState(() {
+                          isCompleted = value;
+                        });
+                        configureIsCompleted(isCompleted);
+                      },
+                    );
                   },
                 ),
               ),
@@ -610,7 +656,7 @@ class _TaskDetailsState extends State<TaskDetails>
   }
 
   deleteNotifyMeDocument() {
-    tasksRef
+    notifyMeRef
         .document(currentUser.id)
         .collection(tasksId)
         .document('Notify Me reminder')
@@ -623,21 +669,51 @@ class _TaskDetailsState extends State<TaskDetails>
             });
   }
 
+  Future<dynamic> checkNotifyMeStatus() async {
+    DocumentSnapshot snapshot = await notifyMeRef
+        .document(currentUser.id)
+        .collection(tasksId)
+        .document('Notify Me reminder')
+        .get();
+    return snapshot.data['notifyMe'];
+  }
+
   toggleButtonReminder() {
-    // TODO:: Figure out to stream the value from firestore
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
-      child: SwitchListTile.adaptive(
-        title: Text('Notify Me'),
-        value: isSwitched ? true : false,
-        onChanged: (bool value) {
-          setState(() {
-            isSwitched = value;
-          });
-          configureNotifyMe(value);
-        },
-        secondary: const Icon(Icons.lightbulb_outline),
-      ),
+      child: FutureBuilder(
+          future: checkNotifyMeStatus(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              bool isSwitched = snapshot.data;
+              return SwitchListTile.adaptive(
+                title: Text('Notify Me'),
+                value: isSwitched,
+                onChanged: (bool value) {
+                  setState(() {
+                    isSwitched = value;
+                  });
+                  configureNotifyMe(value);
+                },
+                secondary: const Icon(Icons.lightbulb_outline),
+              );
+            } else if (snapshot.data == null) {
+              return SwitchListTile.adaptive(
+                title: Text('Notify Me'),
+                value: isSwitched,
+                onChanged: (bool value) {
+                  setState(() {
+                    isSwitched = value;
+                  });
+                  configureNotifyMe(value);
+                },
+                secondary: const Icon(Icons.lightbulb_outline),
+              );
+            } else {
+              return Center(child: circularProgress());
+            }
+          }),
     );
   }
 

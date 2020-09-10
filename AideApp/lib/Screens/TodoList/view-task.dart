@@ -170,7 +170,7 @@ class _ViewTaskState extends State<ViewTask> {
                     'Completed'),
               ],
             ),
-             Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -207,15 +207,17 @@ class _ViewTaskState extends State<ViewTask> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return circularProgress();
+          } else if (snapshot.data == null) {
+            return Container(
+              child: Text('No tasks'),
+              // TODO:: Figure out something to put here other than no tasks
+            );
           }
           List<Tasks> tasks = [];
-
           snapshot.data.documents.forEach((doc) {
             tasks.add(Tasks.fromDocument(doc));
           });
-          return
-              // isEmpty != null ? Text('No more tasks') :
-              ListView(
+          return ListView(
             children: tasks,
           );
         });
