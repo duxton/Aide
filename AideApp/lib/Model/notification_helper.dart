@@ -43,6 +43,7 @@ Future<void> scheduleNotification(
     'Remember about it',
     icon: 'app_icon',
   );
+
   var iOSPlatformChannelSpecifics = IOSNotificationDetails();
   var platformChannelSpecifics = NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);

@@ -1,8 +1,6 @@
 import 'package:AideApp/Model/notification_helper.dart';
-import 'package:AideApp/Model/tasks.dart';
 import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Home.dart';
-
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:AideApp/Widgets/Re-usable/progress.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -15,11 +13,9 @@ import '../../main.dart';
 
 class EditTask extends StatefulWidget {
   final User currentUser;
-  final Task tasksInfo;
 
   EditTask({
     this.currentUser,
-    this.tasksInfo,
   });
 
   @override
@@ -56,7 +52,6 @@ class _EditTaskState extends State<EditTask> {
 
   customTextField(String text, sideIcon, controller, maxLength) {
     return ListTile(
-      // ListTile for input where was the photo was taken
       leading: sideIcon,
       title: Container(
         width: 250.0,
@@ -80,8 +75,8 @@ class _EditTaskState extends State<EditTask> {
     // DateTime notifyMeTime = DateTime.now().add(Duration(seconds: 5));
     if (value) {
       handleSubmitNotificationTask();
-      scheduleNotification(flutterLocalNotificationsPlugin, '1', nameController.text,
-          notificationTask);
+      scheduleNotification(flutterLocalNotificationsPlugin, '1',
+          nameController.text, notificationTask);
     } else {
       //  deleteNotifyMeDocument();
       turnOffNotificationById(flutterLocalNotificationsPlugin, 1);
@@ -271,6 +266,19 @@ class _EditTaskState extends State<EditTask> {
     );
   }
 
+  getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemarks = await Geolocator()
+        .placemarkFromCoordinates(position.latitude, position.longitude);
+    Placemark placemark = placemarks[0];
+    String completeAddress =
+        '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
+    print(completeAddress);
+    String formattedAddress = "${placemark.locality}, ${placemark.country}";
+    locationController.text = formattedAddress;
+  }
+
   dropdownContainer() {
     return Column(
       children: <Widget>[
@@ -418,19 +426,6 @@ class _EditTaskState extends State<EditTask> {
         ),
       ],
     );
-  }
-
-  getUserLocation() async {
-    Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemarks = await Geolocator()
-        .placemarkFromCoordinates(position.latitude, position.longitude);
-    Placemark placemark = placemarks[0];
-    String completeAddress =
-        '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
-    print(completeAddress);
-    String formattedAddress = "${placemark.locality}, ${placemark.country}";
-    locationController.text = formattedAddress;
   }
 
   @override

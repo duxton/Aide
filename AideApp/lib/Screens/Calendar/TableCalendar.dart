@@ -120,8 +120,8 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text('Tittle'),
+        automaticallyImplyLeading: true,
+        title: Text('Calender'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
@@ -131,9 +131,9 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
           _buildTableCalendar(),
           // _buildTableCalendarWithBuilders(),
           const SizedBox(height: 8.0),
-          //  _buildButtons(),
+          //_buildButtons(),
           const SizedBox(height: 8.0),
-          Expanded(child: _buildEventList()),
+        //  Expanded(child: _buildEventList()),
         ],
       ),
     );
@@ -152,7 +152,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       calendarController: _calendarController,
       events: _events,
       holidays: _holidays,
-      startingDayOfWeek: StartingDayOfWeek.monday,
+      startingDayOfWeek: StartingDayOfWeek.sunday,
       calendarStyle: CalendarStyle(
         selectedColor: Colors.deepOrange[400],
         todayColor: Colors.deepOrange[200],
@@ -298,56 +298,56 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     );
   }
 
-  // Widget _buildButtons() {
-  //   final dateTime = _events.keys.elementAt(_events.length - 2);
+  Widget _buildButtons() {
+    final dateTime = _events.keys.elementAt(_events.length - 2);
 
-  //   return Column(
-  //     children: <Widget>[
-  //       Row(
-  //         mainAxisSize: MainAxisSize.max,
-  //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //         children: <Widget>[
-  //           RaisedButton(
-  //             child: Text('Month'),
-  //             onPressed: () {
-  //               setState(() {
-  //                 _calendarController.setCalendarFormat(CalendarFormat.month);
-  //               });
-  //             },
-  //           ),
-  //           RaisedButton(
-  //             child: Text('2 weeks'),
-  //             onPressed: () {
-  //               setState(() {
-  //                 _calendarController
-  //                     .setCalendarFormat(CalendarFormat.twoWeeks);
-  //               });
-  //             },
-  //           ),
-  //           RaisedButton(
-  //             child: Text('Week'),
-  //             onPressed: () {
-  //               setState(() {
-  //                 _calendarController.setCalendarFormat(CalendarFormat.week);
-  //               });
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 8.0),
-  //       RaisedButton(
-  //         child: Text(
-  //             'Set day ${dateTime.day}-${dateTime.month}-${dateTime.year}'),
-  //         onPressed: () {
-  //           _calendarController.setSelectedDay(
-  //             DateTime(dateTime.year, dateTime.month, dateTime.day),
-  //             runCallback: true,
-  //           );
-  //         },
-  //       ),
-  //     ],
-  //   );
-  // }
+    return Column(
+      children: <Widget>[
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            RaisedButton(
+              child: Text('Month'),
+              onPressed: () {
+                setState(() {
+                  _calendarController.setCalendarFormat(CalendarFormat.month);
+                });
+              },
+            ),
+            RaisedButton(
+              child: Text('2 weeks'),
+              onPressed: () {
+                setState(() {
+                  _calendarController
+                      .setCalendarFormat(CalendarFormat.twoWeeks);
+                });
+              },
+            ),
+            RaisedButton(
+              child: Text('Week'),
+              onPressed: () {
+                setState(() {
+                  _calendarController.setCalendarFormat(CalendarFormat.week);
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 8.0),
+        RaisedButton(
+          child: Text(
+              'Set day ${dateTime.day}-${dateTime.month}-${dateTime.year}'),
+          onPressed: () {
+            _calendarController.setSelectedDay(
+              DateTime(dateTime.year, dateTime.month, dateTime.day),
+              runCallback: true,
+            );
+          },
+        ),
+      ],
+    );
+  }
 
   Widget _buildEventList() {
     return StreamBuilder(

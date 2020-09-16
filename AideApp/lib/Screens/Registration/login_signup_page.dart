@@ -225,6 +225,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               color: Colors.grey,
             )),
         validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
+        // TODO:: Add validator for password 
         onSaved: (value) => _password = value.trim(),
       ),
     );
