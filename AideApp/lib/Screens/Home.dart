@@ -4,6 +4,7 @@ import 'package:AideApp/Model/user.dart';
 import 'package:AideApp/Screens/Registration/login_signup_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +12,15 @@ import 'AuthScreen.dart';
 import 'Registration/create_account.dart';
 
 // final GoogleSignIn googleSignIn = GoogleSignIn();
+
 final StorageReference storageRef = FirebaseStorage.instance.ref();
-final usersRef = Firestore.instance.collection('users');
-final tasksRef = Firestore.instance.collection('tasks');
-final subTasksRef = Firestore.instance.collection('sub-tasks');
-final notifyMeRef = Firestore.instance.collection('notify-me');
-final notificationTaskRef = Firestore.instance.collection('Notification-tasks');
+CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
+CollectionReference tasksRef = FirebaseFirestore.instance.collection('tasks');
+CollectionReference subTasksRef = FirebaseFirestore.instance.collection('sub-tasks');
+CollectionReference notifyMeRef = FirebaseFirestore.instance.collection('notify-me');
+CollectionReference notificationTaskRef = FirebaseFirestore.instance.collection('Notification-tasks');
 final DateTime timestamp = DateTime.now();
-User currentUser;
+Users currentUser;
 Task tasksInfo;
 
 enum AuthStatus {
@@ -75,9 +77,9 @@ class _HomeState extends State<Home> {
 
     createUserInFirestore() async { 
     // 1) check if user exist in users collection in database according to their id
-    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    final user = FirebaseAuth.instance.currentUser;
    //This is where u get current user using googleSignIn
-    DocumentSnapshot doc = await usersRef.document(user.uid).get();
+    DocumentSnapshot doc = await usersRef.doc(user.uid).get();
 
     // 2) if user doesnt exist then take htem to create account page
     if (!doc.exists) {
@@ -85,10 +87,10 @@ class _HomeState extends State<Home> {
           context, MaterialPageRoute(builder: (context) => CreateAccount()));
 
       // 3) get username from create acccount and use it to make new user document in users collection
-      usersRef.document(user.uid).setData({
+      usersRef.doc(user.uid).set({
         "id": user.uid,
         "username": username,
-        "photoUrl": user.photoUrl,
+        "photoUrl": user.photoURL,
         "email": user.email,
         "displayName": user.displayName,
         "bio": "",
@@ -96,9 +98,9 @@ class _HomeState extends State<Home> {
       });
       //make new user their own follower (to include their post in their timeline)
 
-      doc = await usersRef.document(user.uid).get();
+      doc = await usersRef.doc(user.uid).get();
     }
-    currentUser = User.fromDocument(doc);
+    currentUser = Users.fromDocument(doc);
   }
  
 

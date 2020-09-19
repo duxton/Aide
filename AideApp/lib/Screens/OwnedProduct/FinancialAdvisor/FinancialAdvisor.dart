@@ -62,12 +62,12 @@ salaryCard(total,totalMoney, bank, recentTransactions) {
 }
 
 final List<Widget> imgList = [
-  // Total for what, Total Amount, IN/From Where, recent Transactions
-  salaryCard('Total','RM 115,230','All Bank', '- RM 3000'),
-  salaryCard('Cash on hands','RM 2000', 'Maybank', '- RM 10'),
-  salaryCard('Total balance','RM 5123', 'Maybank', '- RM 3000'),
-  salaryCard('Total balance','RM 100,000', 'American Express', '+ RM 5000'),
-  salaryCard('Total balance','RM 10,000', 'OCBC Bank', '- RM 1000'),
+  // Total for what, Total Amount, IN/From Where, usedForCategories
+  salaryCard('Total','RM 115,230','All Bank', 'ALL'),
+  salaryCard('Cash on hands','RM 2000', 'Maybank', 'Cash'),
+  salaryCard('Total balance','RM 5123', 'Maybank', 'Entertainment'),
+  salaryCard('Total balance','RM 100,000', 'American Express', 'Mortage'),
+  salaryCard('Total balance','RM 10,000', 'OCBC Bank', 'Food'),
 ];
 
 class FinancialAssistance extends StatefulWidget {
@@ -133,7 +133,7 @@ class _FinancialAssistanceState extends State<FinancialAssistance>
                 headerVisible: false,
               ),
             )),
-        transactionsCard('Apple', 'Sunway Pyramid', '-5000', Colors.red),
+        transactionsCard('Samsung', 'Sunway Pyramid', '-5000', Colors.red),
         transactionsCard('Salary', 'Apple', '+ 5000', Colors.green),
         transactionsCard('Apple', 'Sunway Pyramid', '-5000', Colors.red),
         transactionsCard('Salary', 'Apple', '+ 5000', Colors.green),

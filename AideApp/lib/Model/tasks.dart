@@ -29,11 +29,11 @@ class Task {
 
    factory Task.fromDocument(DocumentSnapshot doc) {
     return Task(
-      tasksId: doc['tasksId'],
-      description: doc['description'],
-      color: doc['color'],
-      name: doc['name'],
-      time: doc['time'],
+      tasksId: doc.data()['tasksId'],
+      description: doc.data()['description'],
+      color: doc.data()['color'],
+      name: doc.data()['name'],
+      time: doc.data()['time'],
      
     );
   }

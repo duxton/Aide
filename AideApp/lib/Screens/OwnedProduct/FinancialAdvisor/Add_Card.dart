@@ -1,8 +1,8 @@
 import 'dart:ui';
 
+import 'package:AideApp/Model/ListItem.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:flutter/material.dart';
-
 
 class AddCard extends StatefulWidget {
   static const routeName = '/Add_Card';
@@ -13,9 +13,41 @@ class AddCard extends StatefulWidget {
 
 class _AddCardState extends State<AddCard> {
   TextEditingController salaryRange = TextEditingController();
-  TextEditingController description = TextEditingController();
+  TextEditingController recentTransactions = TextEditingController();
   TextEditingController fromWhere = TextEditingController();
   TextEditingController usedFor = TextEditingController();
+
+  List<ListItem> _dropdownItems = [
+    ListItem(1, "Mortage"),
+    ListItem(2, "Car payment"),
+    ListItem(3, "Food"),
+    ListItem(4, "Entertainment"),
+    ListItem(5, "Subscription"),
+    ListItem(6, "Custom")
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _dropdownMenuItems = buildDropDownMenuItems(_dropdownItems);
+    _selectedItem = _dropdownMenuItems[0].value;
+  }
+
+  List<DropdownMenuItem<ListItem>> _dropdownMenuItems;
+  ListItem _selectedItem;
+
+  List<DropdownMenuItem<ListItem>> buildDropDownMenuItems(List listItems) {
+    List<DropdownMenuItem<ListItem>> items = List();
+    for (ListItem listItem in listItems) {
+      items.add(
+        DropdownMenuItem(
+          child: Text(listItem.name),
+          value: listItem,
+        ),
+      );
+    }
+    return items;
+  }
 
   customTextField(String text, sideIcon, controller, labelController) {
     return ListTile(
@@ -38,53 +70,54 @@ class _AddCardState extends State<AddCard> {
   }
 
   salaryCard() {
+    //TODO:: Live edit
     return Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [
-                  Theme.of(context).accentColor,
-                  Theme.of(context).primaryColor,
-                ],
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+        begin: Alignment.topRight,
+        end: Alignment.bottomLeft,
+        colors: [
+          Theme.of(context).accentColor,
+          Theme.of(context).primaryColor,
+        ],
+      )),
+      height: MediaQuery.of(context).size.height * 0.25,
+      child: Card(
+        color: Colors.transparent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            ListTile(
+              title: Center(
+                  child: Text(
+                'Salary Range',
+                style: TextStyle(fontSize: 40, color: Colors.white),
               )),
-              height: MediaQuery.of(context).size.height * 0.25,
-              child: Card(
-                color: Colors.transparent,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    ListTile(
-                      title: Center(
-                          child: Text(
-                        'Salary Range',
-                        style: TextStyle(fontSize: 40, color: Colors.white),
-                      )),
-                      subtitle: Center(
-                          child: Text(
-                        'Description',
-                        style: TextStyle(
-                          color: Colors.grey[300],
-                        ),
-                      )),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text(
-                          'From where',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Text(
-                          'Type',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    )
-                  ],
+              subtitle: Center(
+                  child: Text(
+                'Description',
+                style: TextStyle(
+                  color: Colors.grey[300],
                 ),
-              ),
-            );
+              )),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(
+                  'From where',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Text(
+                  'Type',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -94,20 +127,68 @@ class _AddCardState extends State<AddCard> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            SizedBox(height: 5,),
+            SizedBox(
+              height: 5,
+            ),
             salaryCard(),
-             SizedBox(height: 50,),
+            SizedBox(
+              height: 50,
+            ),
             Container(
               child: Column(
                 children: <Widget>[
-                  customTextField('Salary Range', Icon(Icons.attach_money),
-                      salaryRange, 'Salary Range'),
-                  customTextField('Description optional',
-                      Icon(Icons.description), description, 'Description'),
-                  customTextField('Where did you get this money from?',
-                      Icon(Icons.location_on), fromWhere, 'From Where'),
-                  customTextField('Where do you want to use this money?',
-                      Icon(Icons.category), usedFor, 'Type'),
+                  customTextField('Total Amount', Icon(Icons.attach_money),
+                      salaryRange, 'Total Amount'),
+                  customTextField('What bank to store the money?',
+                      Icon(Icons.location_on), fromWhere, 'Bank name'),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
+                          Icons.announcement,
+                          color: Colors.grey[700],
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          padding:
+                              const EdgeInsets.only(left: 10.0, right: 10.0),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                                style: TextStyle(
+                                    color: Colors.grey[700], fontSize: 16),
+                                value: _selectedItem,
+                                items: _dropdownMenuItems,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedItem = value;
+                                  });
+                                }),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: ButtonTheme(
+                        minWidth: MediaQuery.of(context).size.width * 0.8,
+                        height: 50,
+                        child: RaisedButton.icon(
+                          label: Text(
+                            "Add Card",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          color: Theme.of(context).accentColor,
+                          onPressed: () {},
+                          icon: Icon(Icons.add_box, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

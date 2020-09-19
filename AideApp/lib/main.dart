@@ -5,6 +5,7 @@ import 'package:AideApp/Screens/OwnedProduct/AllProduct.dart';
 import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/Add_Card.dart';
 import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/Add_Transactions.dart';
 import 'package:AideApp/Screens/TodoList/view-task.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/FinancialAdvisor.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+   await Firebase.initializeApp();
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   await initNotifications(flutterLocalNotificationsPlugin);

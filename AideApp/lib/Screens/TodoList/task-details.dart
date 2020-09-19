@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:AideApp/Model/notification_helper.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:AideApp/Widgets/Re-usable/progress.dart';
@@ -41,16 +39,16 @@ class TaskDetails extends StatefulWidget {
 
   factory TaskDetails.fromDocument(DocumentSnapshot doc) {
     return TaskDetails(
-      tasksId: doc['tasksId'],
-      description: doc['description'],
-      color: doc['colour'],
-      name: doc['name'],
-      isCompleted: doc['isCompleted'],
-      time: doc['time'],
-      location: doc['location'],
-      subTaskName: doc['subTaskName'],
-      subTaskCreatedId: doc['subTaskId'],
-      notifyMe: doc['notifyMe'],
+      tasksId: doc.data()['tasksId'],
+      description: doc.data()['description'],
+      color: doc.data()['colour'],
+      name: doc.data()['name'],
+      isCompleted: doc.data()['isCompleted'],
+      time: doc.data()['time'],
+      location: doc.data()['location'],
+      subTaskName: doc.data()['subTaskName'],
+      subTaskCreatedId: doc.data()['subTaskId'],
+      notifyMe: doc.data()['notifyMe'],
     );
   }
   @override
@@ -230,10 +228,10 @@ class _TaskDetailsState extends State<TaskDetails>
     bool isCompleted,
   }) {
     tasksRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection("userTasks")
-        .document(tasksId)
-        .updateData({
+        .doc(tasksId)
+        .update({
       "colour": color,
       "description": description,
       "isCompleted": isCompleted,
@@ -339,21 +337,21 @@ class _TaskDetailsState extends State<TaskDetails>
     bool isCompleted,
   }) {
     tasksRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection("userTasks")
-        .document(tasksId)
-        .updateData({
+        .doc(tasksId)
+        .update({
       "isCompleted": isCompleted,
     });
   }
 
   Future<dynamic> checkIsCompletedStatus() async {
     DocumentSnapshot snapshot = await tasksRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection('userTasks')
-        .document(tasksId)
+        .doc(tasksId)
         .get();
-    return snapshot.data['isCompleted'];
+    return snapshot.data()['isCompleted']; 
   }
 
   changeItToFalse() {
@@ -468,10 +466,10 @@ class _TaskDetailsState extends State<TaskDetails>
     String subTaskname,
   }) {
     subTasksRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection(tasksId)
-        .document(subTaskId)
-        .setData({
+        .doc(subTaskId)
+        .set({
       "subTaskName": subTaskname,
       "tasksId": tasksId,
       "subTaskId": subTaskId,
@@ -508,7 +506,7 @@ class _TaskDetailsState extends State<TaskDetails>
   buildSubTask() {
     return StreamBuilder(
         stream: subTasksRef
-            .document(currentUser.id)
+            .doc(currentUser.id)
             .collection(tasksId)
             .orderBy("timestamp", descending: true)
             .snapshots(),
@@ -643,10 +641,10 @@ class _TaskDetailsState extends State<TaskDetails>
     bool notifyMe,
   }) {
     notifyMeRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection(tasksId)
-        .document('Notify Me reminder')
-        .setData({
+        .doc('Notify Me reminder')
+        .set({
       "notifyMe": notifyMe,
       "tasksId": tasksId,
       "ownerId": currentUser.id,
@@ -657,9 +655,9 @@ class _TaskDetailsState extends State<TaskDetails>
 
   deleteNotifyMeDocument() {
     notifyMeRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection(tasksId)
-        .document('Notify Me reminder')
+        .doc('Notify Me reminder')
         .get()
         .then((value) => {
               if (value.exists)
@@ -671,11 +669,11 @@ class _TaskDetailsState extends State<TaskDetails>
 
   Future<dynamic> checkNotifyMeStatus() async {
     DocumentSnapshot snapshot = await notifyMeRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection(tasksId)
-        .document('Notify Me reminder')
+        .doc('Notify Me reminder')
         .get();
-    return snapshot.data['notifyMe'];
+    return snapshot.data()['notifyMe']; 
   }
 
   toggleButtonReminder() {
@@ -759,8 +757,8 @@ class SubTask extends StatefulWidget {
 
   factory SubTask.fromDocument(DocumentSnapshot doc) {
     return SubTask(
-      subTaskId: doc['subTaskId'],
-      subTaskName: doc['subTaskName'],
+      subTaskId: doc.data()['subTaskId'],
+      subTaskName: doc.data()['subTaskName'],
     );
   }
 

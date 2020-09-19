@@ -13,9 +13,9 @@ class DetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: tasksRef
-            .document(currentUser.id)
+            .doc(currentUser.id)
             .collection('userTasks')
-            .document(tasksId)
+            .doc(tasksId)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -36,9 +36,9 @@ class NotifyMe extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: notifyMeRef
-            .document(currentUser.id)
+            .doc(currentUser.id)
             .collection(tasksId)
-            .document('Notify Me reminder')
+            .doc('Notify Me reminder')
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {

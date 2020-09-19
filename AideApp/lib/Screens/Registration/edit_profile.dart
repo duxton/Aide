@@ -58,7 +58,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    _loadCurrentUser();
+    FirebaseAuth.instance.currentUser;
   }
 
   void _resetPasswordEmailListen() {
@@ -191,15 +191,17 @@ class _EditProfileState extends State<EditProfile> {
       ],
     );
   }
-FirebaseUser currentUser;
+User currentUser;
 
- void _loadCurrentUser() {
-   FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
-     setState(() {
-       currentUser = user;
-     });
-   });
- }
+//  void _loadCurrentUser() {
+//    FirebaseAuth.instance.currentUser.
+//    FirebaseAuth.instance.currentUser.then((User user) {
+//      setState(() {
+//        currentUser = user;
+//      });
+//    });
+
+//  }
 
   void _sendResetPasswordMail() {
     if (_resetPasswordEmail != null && _resetPasswordEmail.isNotEmpty && _resetPasswordEmail == currentUser.email) {

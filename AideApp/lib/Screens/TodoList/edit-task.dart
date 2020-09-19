@@ -12,7 +12,7 @@ import 'package:uuid/uuid.dart';
 import '../../main.dart';
 
 class EditTask extends StatefulWidget {
-  final User currentUser;
+  final Users currentUser;
 
   EditTask({
     this.currentUser,
@@ -100,10 +100,10 @@ class _EditTaskState extends State<EditTask> {
     bool notificationTask,
   }) {
     notificationTaskRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection(tasksId)
-        .document('Notification tasks')
-        .setData({
+        .doc('Notification tasks')
+        .set({
       "notifyMe": notificationTask,
       "tasksId": tasksId,
       "ownerId": currentUser.id,
@@ -155,10 +155,10 @@ class _EditTaskState extends State<EditTask> {
     bool isCompleted,
   }) {
     tasksRef
-        .document(widget.currentUser.id)
+        .doc(widget.currentUser.id)
         .collection("userTasks")
-        .document(tasksId)
-        .setData({
+        .doc(tasksId)
+        .set({
       "name": name,
       "tasksId": tasksId,
       "ownerId": widget.currentUser.id,

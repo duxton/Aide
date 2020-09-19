@@ -352,7 +352,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   Widget _buildEventList() {
     return StreamBuilder(
       stream:
-          tasksRef.document(currentUser.id).collection('userTasks').snapshots(),
+          tasksRef.doc(currentUser.id).collection('userTasks').snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return circularProgress();
@@ -385,10 +385,10 @@ class CalendarTasks extends StatelessWidget {
 
   factory CalendarTasks.fromDocument(DocumentSnapshot doc) {
     return CalendarTasks(
-      name: doc['name'],
-      location: doc['description'],
-      timestamp: doc['timestamp'],
-      tasksId: doc['tasksId'],
+      name: doc.data()['name'],
+      location: doc.data()['description'],
+      timestamp: doc.data()['timestamp'],
+      tasksId: doc.data()['tasksId'],
     );
   }
 

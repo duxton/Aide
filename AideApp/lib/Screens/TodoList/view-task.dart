@@ -50,42 +50,40 @@ class _ViewTaskState extends State<ViewTask> {
   }
 
   getTotalTask() async {
-    QuerySnapshot snapshot = await tasksRef
-        .document(currentUser.id)
-        .collection('userTasks')
-        .getDocuments();
+    QuerySnapshot snapshot =
+        await tasksRef.doc(currentUser.id).collection('userTasks').get();
 
     setState(() {
       isWaiting = false;
-      totalTask = snapshot.documents.length;
+      totalTask = snapshot.docs.length;
     });
   }
 
   getCompletedTask() async {
     QuerySnapshot snapshot = await tasksRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection('userTasks')
         .where('isCompleted', isEqualTo: true)
-        .getDocuments();
+        .get();
 
     setState(() {
       isWaiting = false;
-      totalCompletedTask = snapshot.documents.length;
+      totalCompletedTask = snapshot.docs.length;
     });
   }
 
   getTaskByColor() async {
     //* * Think if this is necessaries
     QuerySnapshot snapshot = await tasksRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection('userTasks')
         .where("colour",
             isEqualTo: "MaterialColor(primary value: Color(0xff03a9f4))")
-        .getDocuments();
+        .get();
 
     setState(() {
       isWaiting = false;
-      totalColourTask = snapshot.documents.length;
+      totalColourTask = snapshot.docs.length;
     });
   }
 
@@ -189,9 +187,9 @@ class _ViewTaskState extends State<ViewTask> {
   bool isCompleted = false;
   checkIfCompletedOrNot() async {
     DocumentSnapshot ds = await tasksRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection("userTasks")
-        .document(this.taskId)
+        .doc(this.taskId)
         .get();
     isCompleted = ds.exists;
   }
@@ -199,22 +197,20 @@ class _ViewTaskState extends State<ViewTask> {
   buildTaskCard() {
     return StreamBuilder(
         stream: tasksRef
-            .document(currentUserId)
+            .doc(currentUserId)
             .collection('userTasks')
-            .orderBy("date", descending: false)
-            .where('isCompleted', isEqualTo: false)
+         // .orderBy("date", descending: false) //TODO:: Fix This
+           .where("isCompleted", isEqualTo: false) 
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return circularProgress();
-          } else if (snapshot.data == null) {
-            return Container(
-              child: Text('No tasks'),
-              // TODO:: Figure out something to put here other than no tasks
-            );
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text("Loading");
           }
           List<Tasks> tasks = [];
-          snapshot.data.documents.forEach((doc) {
+          snapshot.data.docs.forEach((doc) {
             tasks.add(Tasks.fromDocument(doc));
           });
           return ListView(
@@ -274,12 +270,12 @@ class Tasks extends StatelessWidget {
 
   factory Tasks.fromDocument(DocumentSnapshot doc) {
     return Tasks(
-      name: doc['name'],
-      location: doc['location'],
-      timestamp: doc['timestamp'],
-      tasksId: doc['tasksId'],
-      time: doc['time'],
-      color: doc['colour'],
+      name: doc.data()['name'],
+      location: doc.data()['location'],
+      timestamp: doc.data()['timestamp'],
+      tasksId: doc.data()['tasksId'],
+      time: doc.data()['time'],
+      color: doc.data()['colour'],
     );
   }
 
@@ -297,9 +293,9 @@ class Tasks extends StatelessWidget {
 
   deleteTask() {
     tasksRef
-        .document(currentUser.id)
+        .doc(currentUser.id)
         .collection('userTasks')
-        .document(tasksId)
+        .doc(tasksId)
         .get()
         .then((value) => {
               if (value.exists)
@@ -310,11 +306,7 @@ class Tasks extends StatelessWidget {
   }
 
   completedTask() {
-    tasksRef
-        .document(currentUser.id)
-        .collection("userTasks")
-        .document(tasksId)
-        .updateData({
+    tasksRef.doc(currentUser.id).collection("userTasks").doc(tasksId).update({
       "isCompleted": true,
     });
   }
