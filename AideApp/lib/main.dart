@@ -3,7 +3,7 @@ import 'package:AideApp/Screens/Calendar/TableCalendar.dart';
 import 'package:AideApp/Screens/Home.dart';
 import 'package:AideApp/Screens/OwnedProduct/AllProduct.dart';
 import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/Add_Card.dart';
-import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/Add_Transactions.dart';
+
 import 'package:AideApp/Screens/TodoList/view-task.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -18,17 +18,16 @@ import 'Screens/Alarm/model/menuInfo.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-  NotificationAppLaunchDetails notificationAppLaunchDetails;
-
+NotificationAppLaunchDetails notificationAppLaunchDetails;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   await Firebase.initializeApp();
+  await Firebase.initializeApp();
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   await initNotifications(flutterLocalNotificationsPlugin);
   requestIOSPermissions(flutterLocalNotificationsPlugin);
-  
+
   runApp(MyApp());
 }
 
@@ -46,12 +45,13 @@ class MyApp extends StatelessWidget {
         AllProduct.routeName: (ctx) => AllProduct(),
         ViewTask.routeName: (ctx) => ViewTask(),
         AddCard.routeName: (ctx) => AddCard(),
-        AddTransactions.routeName: (ctx) => AddTransactions(),
         Calendar.routeName: (ctx) => Calendar(),
       },
       home: ChangeNotifierProvider<MenuInfo>(
         create: (context) => MenuInfo(MenuType.clock),
-        child: Home( auth: new Auth(),),
+        child: Home(
+          auth: new Auth(),
+        ),
       ),
     );
   }
