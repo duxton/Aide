@@ -199,8 +199,8 @@ class _ViewTaskState extends State<ViewTask> {
         stream: tasksRef
             .doc(currentUserId)
             .collection('userTasks')
-         // .orderBy("date", descending: false) //TODO:: Fix This
-           .where("isCompleted", isEqualTo: false) 
+      //      .orderBy("date", descending: false) //TODO:: Fix This
+            .where("isCompleted", isEqualTo: false)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -218,6 +218,8 @@ class _ViewTaskState extends State<ViewTask> {
           );
         });
   }
+
+  
 
   bool get wantKeepAlive => true;
   @override

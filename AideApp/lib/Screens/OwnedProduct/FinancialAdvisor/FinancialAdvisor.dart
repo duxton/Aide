@@ -187,7 +187,7 @@ class _FinancialAssistanceState extends State<FinancialAssistance>
   }
 
   salaryCardSlideShow() {
-    //TODO:: Carousel slider
+
     return EnlargeStrategyDemo();
   }
 
@@ -303,6 +303,7 @@ class _TransactionsDialogState extends State<TransactionsDialog> {
     return TextFormField(
       autovalidate: true,
       validator: (val) {
+        //TODO:: Validation
         // if ( val.isEmpty) {
         //   return 'Display name too short';
         // } else if (val.trim().length > 8) {

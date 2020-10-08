@@ -10,7 +10,8 @@ class UserFinancialDetailed extends StatefulWidget {
 }
 
 class _UserFinancialDetailedState extends State<UserFinancialDetailed> {
-  customTextField(String text, sideIcon, controller, labelController) {
+  customTextField(
+      String text, sideIcon, controller, labelController, trailingWidget) {
     return ListTile(
       // ListTile for input where was the photo was taken
       leading: sideIcon,
@@ -27,6 +28,20 @@ class _UserFinancialDetailedState extends State<UserFinancialDetailed> {
           ),
         ),
       ),
+      trailing: trailingWidget,
+    );
+  }
+
+  customTitle(String text, sideIcon, trailingWidget) {
+    return ListTile(
+      // ListTile for input where was the photo was taken
+      leading: sideIcon,
+      title: Container(
+          width: 150.0,
+          child: Center(
+            child: Text(text),
+          )),
+      trailing: trailingWidget,
     );
   }
 
@@ -102,8 +117,19 @@ class _UserFinancialDetailedState extends State<UserFinancialDetailed> {
   void _addIncome() {
     _children = List.from(_children)
       ..add(
-        customTextField('Allowance / Salary / Income', Icon(Icons.attach_money),
-            income, "Income"),
+        customTextField(
+          'Allowance / Salary / Income',
+          Icon(Icons.attach_money),
+          income,
+          "Income",
+          IconButton(
+            icon: Icon(
+              Icons.delete,
+              color: Colors.black,
+            ),
+            onPressed: () {},
+          ),
+        ),
       );
     setState(() => ++_count);
   }
@@ -114,37 +140,39 @@ class _UserFinancialDetailedState extends State<UserFinancialDetailed> {
   void _addAssets() {
     _assetChildren = List.from(_assetChildren)
       ..add(
-        Flexible(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              DropdownButtonHideUnderline(
-                child: DropdownButton(
-                    style: TextStyle(color: Colors.grey[700], fontSize: 16),
-                    value: _selectedAssets,
-                    items: _dropdownAssetsItems,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedAssets = value;
-                        if (value == 1) {}
-                      });
-                    }),
-              ),
-              Container(
-                width: 150.0,
-                child: TextField(
-                  style: TextStyle(color: Colors.black),
-                  controller: worth,
-                  decoration: InputDecoration(
-                    labelText: 'Worth',
-                    hintText: 'Worth',
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            DropdownButtonHideUnderline(
+              child: DropdownButton(
+                  style: TextStyle(color: Colors.grey[700], fontSize: 16),
+                  value: _selectedAssets,
+                  items: _dropdownAssetsItems,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedAssets = value;
+                      if (value == 1) {}
+                    });
+                  }),
+            ),
+            Container(
+              width: 100.0,
+              child: TextField(
+                style: TextStyle(color: Colors.black),
+                controller: worth,
+                decoration: InputDecoration(
+                  labelText: 'Worth',
+                  hintText: 'Worth',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.grey),
                 ),
               ),
-            ],
-          ),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {},
+            ),
+          ],
         ),
       );
     setState(() => ++_assetcount);
@@ -156,42 +184,44 @@ class _UserFinancialDetailedState extends State<UserFinancialDetailed> {
   void _addMonthly() {
     _monthlyChildren = List.from(_monthlyChildren)
       ..add(
-        Flexible(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              DropdownButtonHideUnderline(
-                child: DropdownButton(
-                    style: TextStyle(color: Colors.grey[700], fontSize: 16),
-                    value: _selectedMonthlyPayment,
-                    items: _dropdownMonthlyPaymentItems,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedMonthlyPayment = value;
-                        if (value == 1) {}
-                      });
-                    }),
-              ),
-              Container(
-                width: 150.0,
-                child: TextField(
-                  style: TextStyle(color: Colors.black),
-                  controller: income,
-                  decoration: InputDecoration(
-                    labelText: 'Income',
-                    hintText: 'Income',
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            DropdownButtonHideUnderline(
+              child: DropdownButton(
+                  style: TextStyle(color: Colors.grey[700], fontSize: 16),
+                  value: _selectedMonthlyPayment,
+                  items: _dropdownMonthlyPaymentItems,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedMonthlyPayment = value;
+                      if (value == 1) {}
+                    });
+                  }),
+            ),
+            Container(
+              width: 100.0,
+              child: TextField(
+                style: TextStyle(color: Colors.black),
+                controller: income,
+                decoration: InputDecoration(
+                  labelText: 'Income',
+                  hintText: 'Income',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.grey),
                 ),
               ),
-            ],
-          ),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {},
+            ),
+          ],
         ),
       );
     setState(() => ++_monthlycount);
   }
-//TODO:: Think of other design for this 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,99 +233,130 @@ class _UserFinancialDetailedState extends State<UserFinancialDetailed> {
           Flexible(
             flex: 3,
             child: Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                child: Icon(
-                  //TODO:: Think of something to put here
-                  Icons.attach_money,
-                  size: 100,
-                )),
-          ),
-          customTextField('Allowance / Salary / Income',
-              Icon(Icons.attach_money), income, "Income"),
-          Flexible(flex: 1, child: ListView(children: _children)),
-          //TODO:: Figure something out when nothing is added
-          addFormWidget(() {
-            _addIncome();
-          }),
-          Center(
-            child: Text('Monthly payment'),
-          ),
-          Flexible(
-            flex: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                      style: TextStyle(color: Colors.grey[700], fontSize: 16),
-                      value: _selectedMonthlyPayment,
-                      items: _dropdownMonthlyPaymentItems,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedMonthlyPayment = value;
-                          if (value == 1) {}
-                        });
-                      }),
-                ),
-                Container(
-                  width: 150.0,
-                  child: TextField(
-                    style: TextStyle(color: Colors.black),
-                    controller: income,
-                    decoration: InputDecoration(
-                      labelText: 'Income',
-                      hintText: 'Income',
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ],
+              height: MediaQuery.of(context).size.height * 0.25,
+              width: MediaQuery.of(context).size.width * 0.55,
+              child: Text(
+                'Net Worth RM 300,000',
+                style: TextStyle(fontSize: 40),
+              ),
             ),
           ),
-           Flexible(flex: 1, child: ListView(children: _monthlyChildren)),
+          customTitle(
+              'Allowance / Salary / Income',
+              Icon(Icons.attach_money),
+              IconButton(
+                icon: Icon(Icons.help, color: Colors.black),
+                onPressed: () {},
+              )),
           addFormWidget(() {
-            _addMonthly();
+            showDialog(
+              context: context,
+              builder: (_) => StatefulBuilder(
+                builder: (context, setState) {
+                  return new AlertDialog(
+                    title: new Text("Material Dialog"),
+                    content: Container(
+                        width: 300,
+                        height: 300,
+                        child: ListView(children: _children)),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('Close me!'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      FlatButton(
+                        child: Text('Add form!'),
+                        onPressed: () {
+                          setState(() {
+                            _addIncome();
+                          });
+                        },
+                      )
+                    ],
+                  );
+                },
+              ),
+            );
           }),
-          Center(
-            child: Text('Assets'),
-          ),
-          Flexible(
-            flex: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                      style: TextStyle(color: Colors.grey[700], fontSize: 16),
-                      value: _selectedAssets,
-                      items: _dropdownAssetsItems,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedAssets = value;
-                          if (value == 1) {}
-                        });
-                      }),
-                ),
-                Container(
-                  width: 150.0,
-                  child: TextField(
-                    style: TextStyle(color: Colors.black),
-                    controller: worth,
-                    decoration: InputDecoration(
-                      labelText: 'Worth',
-                      hintText: 'Worth',
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Flexible(flex: 1,child: ListView(children: _assetChildren)),
+          customTitle(
+              'Monthly Payment',
+              Icon(Icons.attach_money),
+              IconButton(
+                icon: Icon(Icons.help, color: Colors.black),
+                onPressed: () {},
+              )),
           addFormWidget(() {
-            _addAssets();
+            showDialog(
+              context: context,
+              builder: (_) => StatefulBuilder(
+                builder: (context, setState) {
+                  return new AlertDialog(
+                    title: new Text("Material Dialog"),
+                    content: Container(
+                        width: 300,
+                        height: 300,
+                        child: ListView(children: _monthlyChildren)),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('Close me!'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      FlatButton(
+                        child: Text('Add form!'),
+                        onPressed: () {
+                          setState(() {
+                            _addMonthly();
+                          });
+                        },
+                      )
+                    ],
+                  );
+                },
+              ),
+            );
+          }),
+          customTitle(
+              'Assets',
+              Icon(Icons.attach_money),
+              IconButton(
+                icon: Icon(Icons.help, color: Colors.black),
+                onPressed: () {},
+              )),
+          addFormWidget(() {
+            showDialog(
+              context: context,
+              builder: (_) => StatefulBuilder(
+                builder: (context, setState) {
+                  return new AlertDialog(
+                    title: new Text("Material Dialog"),
+                    content: Container(
+                        width: 300,
+                        height: 300,
+                        child: ListView(children: _assetChildren)),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('Close me!'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      FlatButton(
+                        child: Text('Add form!'),
+                        onPressed: () {
+                          setState(() {
+                            _addAssets();
+                          });
+                        },
+                      )
+                    ],
+                  );
+                },
+              ),
+            );
           }),
         ],
       ),
