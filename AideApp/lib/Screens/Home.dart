@@ -14,11 +14,12 @@ import 'Registration/create_account.dart';
 // final GoogleSignIn googleSignIn = GoogleSignIn();
 
 final StorageReference storageRef = FirebaseStorage.instance.ref();
-CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
-CollectionReference tasksRef = FirebaseFirestore.instance.collection('tasks');
-CollectionReference subTasksRef = FirebaseFirestore.instance.collection('sub-tasks');
-CollectionReference notifyMeRef = FirebaseFirestore.instance.collection('notify-me');
-CollectionReference notificationTaskRef = FirebaseFirestore.instance.collection('Notification-tasks');
+final CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
+final CollectionReference tasksRef = FirebaseFirestore.instance.collection('tasks');
+final CollectionReference subTasksRef = FirebaseFirestore.instance.collection('sub-tasks');
+final CollectionReference notifyMeRef = FirebaseFirestore.instance.collection('notify-me');
+final CollectionReference transactionsRef = FirebaseFirestore.instance.collection('transactions');
+final CollectionReference notificationTaskRef = FirebaseFirestore.instance.collection('Notification-tasks');
 final DateTime timestamp = DateTime.now();
 Users currentUser;
 Task tasksInfo;

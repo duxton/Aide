@@ -3,7 +3,6 @@ import 'package:AideApp/Screens/TodoList/taskDetailsStream.dart';
 import 'package:AideApp/Screens/TodoList/edit-task.dart';
 import 'package:AideApp/Screens/TodoList/task-details.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
-import 'package:AideApp/Widgets/Re-usable/progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

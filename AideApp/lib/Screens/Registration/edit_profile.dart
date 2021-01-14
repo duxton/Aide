@@ -61,6 +61,26 @@ class _EditProfileState extends State<EditProfile> {
     FirebaseAuth.instance.currentUser;
   }
 
+  void _changeEmail() { // TODO:: Verify thats its the same as the current user only allow changes
+    if (_email != null && _email.isNotEmpty) {
+      try {
+        print("============>" + _email);
+        widget.auth.changeEmail(_email);
+      } catch (e) {
+        print("============>" + e);
+        setState(() {
+          _isLoading = false;
+          if (_isIos) {
+            _errorMessage = e.details;
+          } else
+            _errorMessage = e.message;
+        });
+      }
+    } else {
+      print("email feild empty");
+    }
+  }
+
   void _resetPasswordEmailListen() {
     if (_resetPasswordEmailFilter.text.isEmpty) {
       _resetPasswordEmail = "";
@@ -125,25 +145,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
 
-  void _changeEmail() { // TODO:: Verify thats its the same as the current user only allow changes
-    if (_email != null && _email.isNotEmpty) {
-      try {
-        print("============>" + _email);
-        widget.auth.changeEmail(_email);
-      } catch (e) {
-        print("============>" + e);
-        setState(() {
-          _isLoading = false;
-          if (_isIos) {
-            _errorMessage = e.details;
-          } else
-            _errorMessage = e.message;
-        });
-      }
-    } else {
-      print("email feild empty");
-    }
-  }
+  
 
   dropdownEmailContainer() {
     return Column(

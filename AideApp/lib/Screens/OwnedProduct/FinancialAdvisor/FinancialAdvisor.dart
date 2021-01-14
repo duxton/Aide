@@ -1,11 +1,12 @@
 import 'dart:ui';
 
 import 'package:AideApp/Model/ListItem.dart';
+import 'package:AideApp/Screens/Home.dart';
 import 'package:AideApp/Screens/OwnedProduct/FinancialAdvisor/Financial_settings.dart';
 import 'package:AideApp/Widgets/Re-usable/header.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
+import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -68,6 +69,7 @@ salaryCard(total, totalMoney, bank, recentTransactions) {
 
 final List<Widget> imgList = [
   // Total for what, Total Amount, IN/From Where, usedForCategories
+  //TODO:: FutureBuilder to this imgList()
   salaryCard('Total', 'RM 115,230', 'All Bank', 'ALL'),
   salaryCard('Cash on hands', 'RM 2000', 'Maybank', 'Cash'),
   salaryCard('Total balance', 'RM 5123', 'Maybank', 'Entertainment'),
@@ -110,6 +112,7 @@ class _FinancialAssistanceState extends State<FinancialAssistance>
         setDialVisible(scrollController.position.userScrollDirection ==
             ScrollDirection.forward);
       });
+      
   }
 
   transactionsCard(name, where, price, colorStyle) {
@@ -144,6 +147,7 @@ class _FinancialAssistanceState extends State<FinancialAssistance>
         transactionsCard('Apple', 'Sunway Pyramid', '-5000', Colors.red),
         transactionsCard('Salary', 'Apple', '+ 5000', Colors.green),
         transactionsCard('Apple', 'Sunway Pyramid', '-5000', Colors.red),
+        //TODO:: StreamBuilder here
       ],
     );
   }
@@ -187,7 +191,6 @@ class _FinancialAssistanceState extends State<FinancialAssistance>
   }
 
   salaryCardSlideShow() {
-
     return EnlargeStrategyDemo();
   }
 
@@ -277,14 +280,20 @@ class _TransactionsDialogState extends State<TransactionsDialog> {
     super.initState();
     _dropdownMenuItems = buildDropDownMenuItems(_dropdownItems);
     _selectedItem = _dropdownMenuItems[0].value;
+
   }
 
   List<DropdownMenuItem<ListItem>> _dropdownMenuItems;
   ListItem _selectedItem;
+  List<ListItem> dataAddOrMinus;
   final _formKey = GlobalKey<FormState>();
-  String productName;
-  String storeName;
-  int amount;
+  TextEditingController productNameController = TextEditingController();
+  TextEditingController storeNameController = TextEditingController();
+
+  TextEditingController amountController = TextEditingController();
+
+  bool isUploading = false;
+  String transactionsId = Uuid().v4();
 
   List<DropdownMenuItem<ListItem>> buildDropDownMenuItems(List listItems) {
     List<DropdownMenuItem<ListItem>> items = List();
@@ -300,19 +309,8 @@ class _TransactionsDialogState extends State<TransactionsDialog> {
   }
 
   transactionsFormField(labelText, varName, keyboardType) {
-    return TextFormField(
-      autovalidate: true,
-      validator: (val) {
-        //TODO:: Validation
-        // if ( val.isEmpty) {
-        //   return 'Display name too short';
-        // } else if (val.trim().length > 8) {
-        //   return "Display name too long";
-        // } else {
-        //   return null;
-        // }
-      },
-      onSaved: (val) => varName = val,
+    return TextField(
+      controller: varName,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         border: UnderlineInputBorder(),
@@ -322,6 +320,51 @@ class _TransactionsDialogState extends State<TransactionsDialog> {
       ),
     );
   }
+
+  
+
+  handleSubmitTransactions() async{
+    setState(() {
+      isUploading = true;
+    });
+    createTransactionsInFirestore(
+      productName: productNameController.text,
+      storeName: storeNameController.text,
+      amount: int.parse(amountController.text),
+      addOrMinus: dataAddOrMinus.map((item) {
+      return item.toMap();
+    }).toList(), //TODO:: Figure this out why null
+    );
+    productNameController.clear();
+    storeNameController.clear();
+    amountController.clear();
+    setState(() {
+      isUploading = false;
+      transactionsId = Uuid().v4();
+      Navigator.pop(context);
+    });
+  }
+  
+
+  createTransactionsInFirestore({
+    String productName,
+    String storeName,
+    int amount,
+    List addOrMinus,
+  }) {
+    transactionsRef
+        .doc(currentUser.id)
+        .collection('Transactions')
+        .doc(transactionsId)
+        .set({
+      "productName": productName,
+      "transactionsId": transactionsId,
+      "storeName": storeName,
+      "amount": amount,
+      "addOrMinus": addOrMinus,
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -343,18 +386,18 @@ class _TransactionsDialogState extends State<TransactionsDialog> {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: transactionsFormField(
-                        'Product name', productName, TextInputType.name),
+                    child: transactionsFormField('Product name',
+                        productNameController, TextInputType.name),
                   ),
                   Padding(
                     padding: EdgeInsets.all(8.0),
                     child: transactionsFormField(
-                        'Store name', storeName, TextInputType.name),
+                        'Store name', storeNameController, TextInputType.name),
                   ),
                   Padding(
                     padding: EdgeInsets.all(8.0),
                     child: transactionsFormField(
-                        'Amount', amount, TextInputType.number),
+                        'Amount', amountController, TextInputType.number),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -377,7 +420,9 @@ class _TransactionsDialogState extends State<TransactionsDialog> {
                                 onChanged: (value) {
                                   setState(() {
                                     _selectedItem = value;
+                                    value = dataAddOrMinus;
                                   });
+                            
                                 }),
                           ),
                         ),
@@ -388,16 +433,22 @@ class _TransactionsDialogState extends State<TransactionsDialog> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       FlatButton(
-                        child: Text('Submit', style: TextStyle(color: Colors.blue, fontSize: 15),),
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
-                          }
-                        },
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.blue, fontSize: 15),
+                        ),
+                        onPressed: isUploading
+                            ? null
+                            : () => handleSubmitTransactions(),
                       ),
                       FlatButton(
-                        child: Text('Cancel', style: TextStyle(color: Colors.blue, fontSize: 15),),
-                        onPressed: () {},
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.blue, fontSize: 15),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
                     ],
                   ),

@@ -4,4 +4,5 @@ class ListItem {
 
 
   ListItem(this.value, this.name,);
+   Map<String, dynamic> toMap() => {'name': name, 'value': value};
 }
